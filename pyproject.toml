@@ -1,0 +1,62 @@
+
+[build-system]
+requires = ["setuptools"] 
+build-backend = "setuptools.build_meta" 
+
+[tool.setuptools]
+packages = [
+    "rerankers",
+    "rerankers.models",
+    "rerankers.integrations",
+]
+
+[project]
+name = "rerankers" 
+
+
+version = "0.1.0"
+
+description = "A unified API for various document re-ranking models."
+
+readme = "README.md"
+
+requires-python = ">=3.8"
+
+license = {file = "LICENSE"}
+
+keywords = ["reranking", "retrieval", "rag", "nlp"]
+
+authors = [
+  {name = "Ben Clavié", email = "bc@answer.ai" }
+]
+maintainers = [
+  {name = "Ben Clavié", email = "bc@answer.ai" }
+]
+
+classifiers = [
+  # Specify the Python versions you support here. In particular, ensure
+  # that you indicate you support Python 3. These classifiers are *not*
+  # checked by "pip install". See instead "requires-python" key in this file.
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3 :: Only",
+]
+
+dependencies = [
+  "pydantic",
+  "tqdm",
+]
+
+[project.optional-dependencies]
+all = ["transformers", "torch", "litellm", "requests", "sentencepiece", "protobuf", "colbert-ai"]
+transformers = ["transformers", "torch", "sentencepiece", "protobuf"]
+api = ["requests"]
+gpt = ["litellm"]
+dev = ["ruff", "isort", "pytest", "ipyprogress", "ipython", "ranx", "ir_datasets", "srsly"]
+
+[project.urls]
+"Homepage" = "https://github.com/bclavie/rerankers"
