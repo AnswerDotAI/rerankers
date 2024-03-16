@@ -102,12 +102,14 @@ _Rerankers will always try to infer the model you're trying to use based on its 
 Then, regardless of which reranker is loaded, use the loaded model to rank a query against documents:
 
 ```python
-> results = ranker.rank(query="I love you", docs=["I hate you", "I really like you"], doc_ids=[0,1])
+> from rerankers.documents import Document
+> docs = [Document("I really like you", id=0), Document("I hate you", id=1)]
+> results = ranker.rank("I love you", docs)
 > results
-RankedResults(results=[Result(doc_id=1, text='I really like you', score=0.26170814, rank=1), Result(doc_id=0, text='I hate you', score=0.079210326, rank=2)], query='I love you', has_scores=True)
+RankedResults(results=[Result(document=Document(text='I really like you', id=0), score=-2.453125, rank=1), Result(document=Document(text='I hate you', id=1), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
 ```
 
-You don't need to pass `doc_ids`! If not provided, they'll be auto-generated as integers corresponding to the index of a document in `docs`.
+You don't need to pass `doc_ids`!
 
 All rerankers will return a `RankedResults` object, which is a pydantic object containing a list of `Result` objects and some other useful information, such as the original query. You can retrieve the top `k` results from it by running `top_k()`:
 
