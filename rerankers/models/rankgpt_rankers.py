@@ -148,7 +148,7 @@ class RankGPTRanker(BaseRanker):
         ranked_docs = []
         for idx, doc in enumerate(item["hits"]):
             ranked_docs.append(
-                Result(document=docs[doc[idx]], text=doc["content"], rank=idx + 1)
+                Result(document=list(filter(lambda x: x.text == doc['content'], docs))[0], rank=idx + 1)
             )
         ranked_results = RankedResults(
             results=ranked_docs, query=query, has_scores=False
