@@ -10,6 +10,7 @@ import copy
 from typing import Optional, Union, List, Dict
 from litellm import completion
 from rerankers.models.ranker import BaseRanker
+from rerankers.documents import Document
 from rerankers.results import RankedResults, Result
 from rerankers.utils import vprint, ensure_docids, ensure_docs_list
 
@@ -125,14 +126,14 @@ class RankGPTRanker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: Union[str, List[str]],
-        doc_ids: Optional[Union[List[str], List[int]]] = None,
+        docs: Union[Document, List[Document]],
         rank_start: int = 0,
         rank_end: int = 0,
     ) -> RankedResults:
-        docs = ensure_docs_list(docs)
-        doc_ids = ensure_docids(doc_ids, len(docs))
-        item = make_item(query, docs)
+        if isinstance(docs, Document):
+            docs = [docs]
+
+        item = make_item(query, [d.text for d in docs])
         messages = create_permutation_instruction(
             item=item,
             rank_start=rank_start,
@@ -147,7 +148,7 @@ class RankGPTRanker(BaseRanker):
         ranked_docs = []
         for idx, doc in enumerate(item["hits"]):
             ranked_docs.append(
-                Result(doc_id=doc_ids[idx], text=doc["content"], rank=idx + 1)
+                Result(document=docs[doc[idx]], text=doc["content"], rank=idx + 1)
             )
         ranked_results = RankedResults(
             results=ranked_docs, query=query, has_scores=False
