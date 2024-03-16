@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Union
 from rerankers.results import RankedResults
+from rerankers.documents import Document
+
 
 
 class BaseRanker(ABC):
@@ -16,7 +18,7 @@ class BaseRanker(ABC):
     def rank(
         self,
         query: str,
-        docs: List[str],
+        docs: List[Document],
         doc_ids: Optional[Union[List[str], str]] = None,
     ) -> RankedResults:
         """

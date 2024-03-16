@@ -1,10 +1,12 @@
 from typing import Union, Optional, List
 from pydantic import BaseModel, validator
 
+from rerankers.documents import Document
+
+
 
 class Result(BaseModel):
-    doc_id: Union[int, str]
-    text: str
+    document: Document
     score: Optional[float] = None
     rank: Optional[int] = None
 
@@ -40,5 +42,5 @@ class RankedResults(BaseModel):
 
     def get_score_by_docid(self, doc_id: Union[int, str]) -> Optional[float]:
         """Fetches the score of a result by its doc_id using a more efficient approach."""
-        result = next((r for r in self.results if r.doc_id == doc_id), None)
+        result = next((r for r in self.results if r.document.id == doc_id), None)
         return result.score if result else None

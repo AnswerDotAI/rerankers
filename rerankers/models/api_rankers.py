@@ -2,6 +2,8 @@ from typing import Union, List, Optional
 from rerankers.models.ranker import BaseRanker
 from rerankers.results import RankedResults, Result
 from rerankers.utils import ensure_docids, ensure_docs_list
+from rerankers.documents import Document
+
 
 import requests
 import json
@@ -29,15 +31,14 @@ class APIRanker(BaseRanker):
         self.url = URLS[self.api_provider]
 
     def _parse_response(
-        self, response: dict, doc_ids: Union[List[str], List[int]]
+        self, response: dict, docs: List[Document]
     ) -> RankedResults:
         ranked_docs = []
         if self.api_provider == "cohere" or self.api_provider == "jina":
             for i, r in enumerate(response["results"]):
                 ranked_docs.append(
                     Result(
-                        doc_id=doc_ids[r["index"]],
-                        text=r["document"]["text"],
+                        document = docs[r["index"]],
                         score=r["relevance_score"],
                         rank=i + 1,
                     )
@@ -48,23 +49,22 @@ class APIRanker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: Union[str, List[str]],
-        doc_ids: Optional[Union[List[str], List[int]]] = None,
+        docs: Union[Document, List[Document]],
     ) -> RankedResults:
-        docs = ensure_docs_list(docs)
-        doc_ids = ensure_docids(doc_ids, len(docs))
+        if isinstance(docs, Document):
+            docs = [docs]
         payload = self._format_payload(query, docs)
         response = requests.post(self.url, headers=self.headers, data=payload)
-        results = self._parse_response(response.json(), doc_ids)
+        results = self._parse_response(response.json(), docs)
         return RankedResults(results=results, query=query, has_scores=True)
 
-    def _format_payload(self, query: str, docs: List[str]) -> str:
+    def _format_payload(self, query: str, docs: List[Document]) -> str:
         if self.api_provider == "cohere" or self.api_provider == "jina":
             return json.dumps(
                 {
                     "model": self.model,
                     "query": query,
-                    "documents": docs,
+                    "documents": [d.text for d in docs],
                     "top_n": len(docs),
                     "return_documents": True,
                 }
