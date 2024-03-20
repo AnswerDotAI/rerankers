@@ -12,6 +12,12 @@ _A lightweight unified API for various reranking models. Developed by [@bclavie]
 
 Welcome to `rerankers`! Our goal is to provide users with a simple API to use any reranking models.
 
+## Updates
+
+- v0.1.2: 🆕 Voyage reranking API
+- v0.1.1: Langchain integration fixed!
+- v0.1.0: Initial release
+
 ## Why `rerankers`?
 
 Rerankers are an important part of any retrieval architecture, but they're also often more obscure than other parts of the pipeline.
@@ -30,12 +36,6 @@ All the different reranking approaches tend to be done in their own library, wit
 - 🔗 Easy-to-integrate. It should fit in just about any existing pipelines, with only a few lines of code!
 - 💪 Easy-to-expand. Any new reranking models can be added with very little knowledge of the codebase. All you need is a new class with a `rank()` function call mapping a (query, [documents]) input to a `RankedResults` output.
 - 🐛 Easy-to-debug. This is a beta release and there might be issues, but the codebase is conceived in such a way that most issues should be easy to track and fix ASAP.
-
-## Updates
-
-- v0.1.2: 🆕 Voyage reranking API
-- v0.1.1: Langchain integration fixed!
-- v0.1.0: Initial release
 
 ## Get Started
 
