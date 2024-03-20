@@ -12,12 +12,6 @@ _A lightweight unified API for various reranking models. Developed by [@bclavie]
 
 Welcome to `rerankers`! Our goal is to provide users with a simple API to use any reranking models.
 
-## Updates
-
-- v0.1.2: 🆕 Voyage reranking API
-- v0.1.1: Langchain integration fixed!
-- v0.1.0: Initial release
-
 ## Why `rerankers`?
 
 Rerankers are an important part of any retrieval architecture, but they're also often more obscure than other parts of the pipeline.
@@ -59,6 +53,12 @@ pip install "rerankers[api]"
 # All of the above
 pip install "rerankers[all]"
 ```
+
+## Updates
+
+- v0.1.2: 🆕 Voyage reranking API
+- v0.1.1: Langchain integration fixed!
+- v0.1.0: Initial release
 
 ## Usage
 
