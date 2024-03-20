@@ -6,6 +6,7 @@ from rerankers.utils import vprint
 DEFAULTS = {
     "jina": {"en": "jina-reranker-v1-base-en"},
     "cohere": {"en": "rerank-english-v2.0", "other": "rerank-multilingual-v2.0"},
+    "voyage": {"en": "rerank-lite-1"},
     "cross-encoder": {
         "en": "mixedbread-ai/mxbai-rerank-base-v1",
         "fr": "antoinelouis/crossencoder-camembert-base-mmarcoFR",
@@ -36,9 +37,10 @@ DEPS_MAPPING = {
     "ColBERTRanker": "transformers",
 }
 
+PROVIDERS = ["cohere", "jina", "voyage"]
+
 
 def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> str:
-    PROVIDERS = ["cohere", "jina"]
     if model_type in PROVIDERS or any(provider in model_name for provider in PROVIDERS):
         return model_type or next(
             (provider for provider in PROVIDERS if provider in model_name), None
@@ -60,6 +62,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
         model_mapping = {
             "cohere": "APIRanker",
             "jina": "APIRanker",
+            "voyage": "APIRanker",
             "rankgpt": "RankGPTRanker",
             "lit5": "LiT5Ranker",
             "t5": "T5Ranker",
@@ -78,6 +81,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "colbert": "ColBERTRanker",
             "cohere": "APIRanker",
             "jina": "APIRanker",
+            "voyage": "APIRanker",
         }
         for key, value in model_mapping.items():
             if key in model_name:
@@ -131,8 +135,8 @@ def Reranker(
 ) -> Optional[BaseRanker]:
     original_model_name = model_name
     api_provider = _get_api_provider(model_name, model_type)
-    if api_provider or model_name.lower() in ["cohere", "jina"]:
-        if model_name.lower() in ["cohere", "jina"]:
+    if api_provider or model_name.lower() in PROVIDERS:
+        if model_name.lower() in PROVIDERS:
             api_provider = model_name.lower()
             model_type = "APIRanker"
             model_name = (

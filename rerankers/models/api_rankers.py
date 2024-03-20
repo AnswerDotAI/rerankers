@@ -10,6 +10,7 @@ import json
 URLS = {
     "cohere": "https://api.cohere.ai/v1/rerank",
     "jina": "https://api.jina.ai/v1/rerank",
+    "voyage": "https://api.voyageai.com/v1/rerank",
     "mixedbread": NotImplemented,
 }
 
@@ -32,16 +33,23 @@ class APIRanker(BaseRanker):
         self, response: dict, doc_ids: Union[List[str], List[int]]
     ) -> RankedResults:
         ranked_docs = []
-        if self.api_provider == "cohere" or self.api_provider == "jina":
-            for i, r in enumerate(response["results"]):
-                ranked_docs.append(
-                    Result(
-                        doc_id=doc_ids[r["index"]],
-                        text=r["document"]["text"],
-                        score=r["relevance_score"],
-                        rank=i + 1,
-                    )
+        results_key = "results" if self.api_provider != "voyage" else "data"
+        print(response)
+
+        for i, r in enumerate(response[results_key]):
+            document_text = (
+                r["document"]
+                if self.api_provider == "voyage"
+                else r["document"]["text"]
+            )
+            ranked_docs.append(
+                Result(
+                    doc_id=doc_ids[r["index"]],
+                    text=document_text,
+                    score=r["relevance_score"],
+                    rank=i + 1,
                 )
+            )
 
         return ranked_docs
 
@@ -59,16 +67,15 @@ class APIRanker(BaseRanker):
         return RankedResults(results=results, query=query, has_scores=True)
 
     def _format_payload(self, query: str, docs: List[str]) -> str:
-        if self.api_provider == "cohere" or self.api_provider == "jina":
-            return json.dumps(
-                {
-                    "model": self.model,
-                    "query": query,
-                    "documents": docs,
-                    "top_n": len(docs),
-                    "return_documents": True,
-                }
-            )
+        top_key = "top_n" if self.api_provider != "voyage" else "top_k"
+        payload = {
+            "model": self.model,
+            "query": query,
+            "documents": docs,
+            top_key: len(docs),
+            "return_documents": True,
+        }
+        return json.dumps(payload)
 
     def score(self, query: str, doc: str) -> float:
         payload = self._format_payload(query, [doc])
