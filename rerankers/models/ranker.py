@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, Union
 from rerankers.results import RankedResults
-
+from asyncio import get_event_loop
+from functools import partial
 
 class BaseRanker(ABC):
     @abstractmethod
@@ -23,6 +24,17 @@ class BaseRanker(ABC):
         End-to-end reranking of documents.
         """
         pass
+
+    async def rank_async(
+        self,
+        query: str,
+        docs: List[str],
+        doc_ids: Optional[Union[List[str], str]] = None,
+    ) -> RankedResults:
+
+
+        loop = get_event_loop()
+        return await loop.run_in_executor(None, partial(self.rank, query, docs, doc_ids))
 
     def as_langchain_compressor(self, k: int = 10):
         try:
