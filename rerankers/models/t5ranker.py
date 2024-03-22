@@ -57,6 +57,7 @@ def _get_output_tokens(model_name_or_path, token_false: str, token_true: str):
         if model_name_or_path in PREDICTION_TOKENS:
             token_false = PREDICTION_TOKENS[model_name_or_path][0]
         else:
+            token_false = PREDICTION_TOKENS["default"][0]
             print(
                 f"WARNING: Model {model_name_or_path} does not have known True/False tokens. Defaulting token_false to `{token_false}`."
             )
