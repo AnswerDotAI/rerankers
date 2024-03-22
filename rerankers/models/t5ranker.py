@@ -83,6 +83,7 @@ class T5Ranker(BaseRanker):
         token_false: str = "auto",
         token_true: str = "auto",
         return_logits: bool = False,
+        inputs_template: str = "Query: {query} Document: {text} Relevant:"
     ):
         """
         Implementation of the key functions from https://github.com/unicamp-dl/InRanker/blob/main/inranker/rankers.py
@@ -129,6 +130,8 @@ class T5Ranker(BaseRanker):
             )
         else:
             vprint("Returning normalised scores...", self.verbose)
+        self.inputs_template = inputs_template
+        vprint(f"Inputs template set to {inputs_template}", self.verbose)
 
     def rank(
         self,
@@ -188,7 +191,8 @@ class T5Ranker(BaseRanker):
             total=ceil(len(docs) / batch_size),
         ):
             queries_documents = [
-                f"Query: {query} Document: {text} Relevant:" for text in batch
+                self.inputs_template.format(query=query, text=text)
+                for text in batch
             ]
             tokenized = self.tokenizer(
                 queries_documents,
