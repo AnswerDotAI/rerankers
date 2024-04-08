@@ -14,7 +14,7 @@ packages = [
 name = "rerankers" 
 
 
-version = "0.1.2"
+version = "0.1.2post1"
 
 description = "A unified API for various document re-ranking models."
 
