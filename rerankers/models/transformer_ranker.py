@@ -71,16 +71,13 @@ class TransformerRanker(BaseRanker):
                 scores.append(batch_scores)
             else:
                 scores.extend(batch_scores)
-        if len(scores) == 1:
-            return Result(doc_id=doc_ids[0], text=docs[0], score=scores[0])
-        else:
-            ranked_results = [
-                Result(doc_id=doc_id, text=doc, score=score, rank=idx + 1)
-                for idx, (doc_id, doc, score) in enumerate(
-                    sorted(zip(doc_ids, docs, scores), key=lambda x: x[2], reverse=True)
-                )
-            ]
-            return RankedResults(results=ranked_results, query=query, has_scores=True)
+        ranked_results = [
+            Result(doc_id=doc_id, text=doc, score=score, rank=idx + 1)
+            for idx, (doc_id, doc, score) in enumerate(
+                sorted(zip(doc_ids, docs, scores), key=lambda x: x[2], reverse=True)
+            )
+        ]
+        return RankedResults(results=ranked_results, query=query, has_scores=True)
 
     @torch.no_grad()
     def score(self, query: str, doc: str) -> float:
