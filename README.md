@@ -14,7 +14,8 @@ Welcome to `rerankers`! Our goal is to provide users with a simple API to use an
 
 ## Updates
 
-- v0.1.2: 🆕 Voyage reranking API
+- v0.2.0: 🆕 [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers, Basic async support thanks to [@tarunamasa](https://github.com/tarunamasa), MixedBread.ai reranking API
+- v0.1.2: Voyage reranking API
 - v0.1.1: Langchain integration fixed!
 - v0.1.0: Initial release
 
@@ -73,6 +74,12 @@ ranker = Reranker('cross-encoder')
 
 # Specific cross-encoder
 ranker = Reranker('mixedbread-ai/mxbai-rerank-xlarge-v1', model_type='cross-encoder')
+
+# FlashRank default. You can specify a 'lang' parameter to load a multilingual version!
+ranker = Reranker('flashrank')
+
+# Specific flashrank model.
+ranker = Reranker('ce-esci-MiniLM-L12-v2', model_type='flashrank')
 
 # Default T5 Seq2Seq reranker
 ranker = Reranker("t5")
