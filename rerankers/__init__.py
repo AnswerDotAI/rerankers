@@ -1,4 +1,4 @@
 from rerankers.reranker import Reranker
 
 __all__ = ["Reranker"]
-__version__ = "0.1.2"
+__version__ = "0.2.0"
