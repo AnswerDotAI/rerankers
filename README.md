@@ -125,6 +125,15 @@ RankedResults(results=[Result(doc_id=1, text='I really like you', score=0.261708
 
 You don't need to pass `doc_ids`! If not provided, they'll be auto-generated as integers corresponding to the index of a document in `docs`.
 
+You can also use `rank_async`, which is essentially just a wrapper to turn `rank()` into a coroutine. The result will be the same:
+
+```python
+```python
+> results = await ranker.rank_async(query="I love you", docs=["I hate you", "I really like you"], doc_ids=[0,1])
+> results
+RankedResults(results=[Result(doc_id=1, text='I really like you', score=0.26170814, rank=1), Result(doc_id=0, text='I hate you', score=0.079210326, rank=2)], query='I love you', has_scores=True)
+```
+
 All rerankers will return a `RankedResults` object, which is a pydantic object containing a list of `Result` objects and some other useful information, such as the original query. You can retrieve the top `k` results from it by running `top_k()`:
 
 ```python
