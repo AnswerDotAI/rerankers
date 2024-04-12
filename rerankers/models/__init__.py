@@ -31,3 +31,10 @@ try:
     AVAILABLE_RANKERS["ColBERTRanker"] = ColBERTRanker
 except ImportError:
     pass
+
+try:
+    from rerankers.models.flashrank_ranker import FlashRankRanker
+
+    AVAILABLE_RANKERS["FlashRankRanker"] = FlashRankRanker
+except ImportError:
+    pass

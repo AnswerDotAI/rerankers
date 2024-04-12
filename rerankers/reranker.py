@@ -5,8 +5,9 @@ from rerankers.utils import vprint
 
 DEFAULTS = {
     "jina": {"en": "jina-reranker-v1-base-en"},
-    "cohere": {"en": "rerank-english-v2.0", "other": "rerank-multilingual-v2.0"},
+    "cohere": {"en": "rerank-english-v3.0", "other": "rerank-multilingual-v3.0"},
     "voyage": {"en": "rerank-lite-1"},
+    "mixedbread.ai": {"en": "mixedbread-ai/mxbai-rerank-large-v1"},
     "cross-encoder": {
         "en": "mixedbread-ai/mxbai-rerank-base-v1",
         "fr": "antoinelouis/crossencoder-camembert-base-mmarcoFR",
@@ -26,6 +27,7 @@ DEFAULTS = {
         "ja": "bclavie/JaColBERTv2",
         "es": "AdrienB134/ColBERTv2.0-spanish-mmarcoES",
     },
+    "flashrank": {"en": "ms-marco-MiniLM-L-12-v2", "other": "ms-marco-MultiBERT-L-12"},
 }
 
 DEPS_MAPPING = {
@@ -35,9 +37,10 @@ DEPS_MAPPING = {
     "RankGPTRanker": "gpt",
     "APIRanker": "api",
     "ColBERTRanker": "transformers",
+    "FlashRankRanker": "flashrank",
 }
 
-PROVIDERS = ["cohere", "jina", "voyage"]
+PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai"]
 
 
 def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> str:
@@ -68,6 +71,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "t5": "T5Ranker",
             "colbert": "ColBERTRanker",
             "cross-encoder": "TransformerRanker",
+            "flashrank": "FlashRankRanker",
         }
         return model_mapping.get(explicit_model_type, explicit_model_type)
     else:
@@ -82,12 +86,18 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "cohere": "APIRanker",
             "jina": "APIRanker",
             "voyage": "APIRanker",
+            "ms-marco-minilm-l-12-v2": "FlashRankRanker",
+            "ms-marco-multibert-l-12": "FlashRankRanker",
         }
         for key, value in model_mapping.items():
             if key in model_name:
                 return value
-        if any(
-            keyword in model_name for keyword in ["minilm", "bert", "cross-encoders/"]
+        if (
+            any(
+                keyword in model_name
+                for keyword in ["minilm", "bert", "cross-encoders/"]
+            )
+            and "/" in model_name
         ):
             return "TransformerRanker"
         print(

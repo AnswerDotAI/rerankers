@@ -11,7 +11,7 @@ URLS = {
     "cohere": "https://api.cohere.ai/v1/rerank",
     "jina": "https://api.jina.ai/v1/rerank",
     "voyage": "https://api.voyageai.com/v1/rerank",
-    "mixedbread": NotImplemented,
+    "mixedbread.ai": "https://api.mixedbread.ai/v1/reranking",
 }
 
 
@@ -29,24 +29,36 @@ class APIRanker(BaseRanker):
         }
         self.url = URLS[self.api_provider]
 
+    def _get_document_text(self, r: dict) -> str:
+        if self.api_provider == "voyage":
+            return r["document"]
+        elif self.api_provider == "mixedbread.ai":
+            return r["input"]
+        else:
+            return r["document"]["text"]
+
+    def _get_score(self, r: dict) -> float:
+        if self.api_provider == "mixedbread.ai":
+            return r["score"]
+        return r["relevance_score"]
+
     def _parse_response(
         self, response: dict, doc_ids: Union[List[str], List[int]]
     ) -> RankedResults:
         ranked_docs = []
-        results_key = "results" if self.api_provider != "voyage" else "data"
+        results_key = (
+            "results"
+            if self.api_provider not in ["voyage", "mixedbread.ai"]
+            else "data"
+        )
         print(response)
 
         for i, r in enumerate(response[results_key]):
-            document_text = (
-                r["document"]
-                if self.api_provider == "voyage"
-                else r["document"]["text"]
-            )
             ranked_docs.append(
                 Result(
                     doc_id=doc_ids[r["index"]],
-                    text=document_text,
-                    score=r["relevance_score"],
+                    text=self._get_document_text(r),
+                    score=self._get_score(r),
                     rank=i + 1,
                 )
             )
@@ -67,13 +79,22 @@ class APIRanker(BaseRanker):
         return RankedResults(results=results, query=query, has_scores=True)
 
     def _format_payload(self, query: str, docs: List[str]) -> str:
-        top_key = "top_n" if self.api_provider != "voyage" else "top_k"
+        top_key = (
+            "top_n" if self.api_provider not in ["voyage", "mixedbread.ai"] else "top_k"
+        )
+        documents_key = "documents" if self.api_provider != "mixedbread.ai" else "input"
+        return_documents_key = (
+            "return_documents"
+            if self.api_provider != "mixedbread.ai"
+            else "return_input"
+        )
+
         payload = {
             "model": self.model,
             "query": query,
-            "documents": docs,
+            documents_key: docs,
             top_key: len(docs),
-            "return_documents": True,
+            return_documents_key: True,
         }
         return json.dumps(payload)
 
