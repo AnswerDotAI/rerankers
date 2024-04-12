@@ -55,6 +55,9 @@ pip install "rerankers[gpt]"
 # API-based rerankers (Cohere, Jina, soon MixedBread)
 pip install "rerankers[api]"
 
+# FlashRank rerankers (ONNX-optimised, very fast on CPU)
+pip install "rerankers[fastrank]"
+
 # All of the above
 pip install "rerankers[all]"
 ```
@@ -138,8 +141,8 @@ Models:
 - ✅ Any standard SentenceTransformer or Transformers cross-encoder
 - 🟠 RankGPT (Implemented using original repo, but missing the rankllm's repo improvements)
 - ✅ T5-based pointwise rankers (InRanker, MonoT5...)
-- ✅ Cohere API rerankers
-- ✅ Jina API rerankers
+- ✅ Cohere, Jina, Voyage and MixedBread API rerankers
+- ✅ [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers (ONNX-optimised models, very fast on CPU)
 - 🟠 ColBERT-based reranker - not a model initially designed for reranking, but quite strong (Implementation could be optimised and is from a third-party implementation.)
 - 📍 MixedBread API (Reranking API not yet released)
 - 📍⭐ RankLLM/RankZephyr (Proper RankLLM implementation will replace the RankGPT one, and introduce RankZephyr support)
