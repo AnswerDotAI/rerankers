@@ -73,7 +73,7 @@ from rerankers import Reranker
 ranker = Reranker('cross-encoder')
 
 # Specific cross-encoder
-ranker = Reranker('mixedbread-ai/mxbai-rerank-xlarge-v1', model_type='cross-encoder')
+ranker = Reranker('mixedbread-ai/mxbai-rerank-large-v1', model_type='cross-encoder')
 
 # FlashRank default. You can specify a 'lang' parameter to load a multilingual version!
 ranker = Reranker('flashrank')
