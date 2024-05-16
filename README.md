@@ -2,6 +2,7 @@
 # rerankers
 
 ![Python Versions](https://img.shields.io/badge/Python-3.8_3.9_3.10_3.11-blue)
+[![Downloads](https://static.pepy.tech/badge/rerankers/month)](https://pepy.tech/project/rerankers)
 [![Twitter Follow](https://img.shields.io/twitter/follow/bclavie?style=social)](https://twitter.com/bclavie)
 
 
@@ -10,6 +11,13 @@ _A lightweight unified API for various reranking models. Developed by [@bclavie]
 ---
 
 Welcome to `rerankers`! Our goal is to provide users with a simple API to use any reranking models.
+
+## Updates
+
+- v0.2.0: 🆕 [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers, Basic async support thanks to [@tarunamasa](https://github.com/tarunamasa), MixedBread.ai reranking API
+- v0.1.2: Voyage reranking API
+- v0.1.1: Langchain integration fixed!
+- v0.1.0: Initial release
 
 ## Why `rerankers`?
 
@@ -30,7 +38,6 @@ All the different reranking approaches tend to be done in their own library, wit
 - 💪 Easy-to-expand. Any new reranking models can be added with very little knowledge of the codebase. All you need is a new class with a `rank()` function call mapping a (query, [documents]) input to a `RankedResults` output.
 - 🐛 Easy-to-debug. This is a beta release and there might be issues, but the codebase is conceived in such a way that most issues should be easy to track and fix ASAP.
 
-
 ## Get Started
 
 Installation is very simple. The core package ships with just two dependencies, `tqdm` and `pydantic`, so as to avoid any conflict with your current environment.
@@ -49,6 +56,9 @@ pip install "rerankers[gpt]"
 # API-based rerankers (Cohere, Jina, soon MixedBread)
 pip install "rerankers[api]"
 
+# FlashRank rerankers (ONNX-optimised, very fast on CPU)
+pip install "rerankers[fastrank]"
+
 # All of the above
 pip install "rerankers[all]"
 ```
@@ -63,7 +73,13 @@ from rerankers import Reranker
 ranker = Reranker('cross-encoder')
 
 # Specific cross-encoder
-ranker = Reranker('mixedbread-ai/mxbai-rerank-xlarge-v1', model_type='cross-encoder')
+ranker = Reranker('mixedbread-ai/mxbai-rerank-large-v1', model_type='cross-encoder')
+
+# FlashRank default. You can specify a 'lang' parameter to load a multilingual version!
+ranker = Reranker('flashrank')
+
+# Specific flashrank model.
+ranker = Reranker('ce-esci-MiniLM-L12-v2', model_type='flashrank')
 
 # Default T5 Seq2Seq reranker
 ranker = Reranker("t5")
@@ -128,6 +144,14 @@ If you'd like your code to be a bit cleaner, you can also directly construct `Do
 RankedResults(results=[Result(document=Document(text='I really like you', doc_id=0, metadata={'source': 'twitter'}), score=-2.453125, rank=1), Result(document=Document(text='I hate you', doc_id=1, metadata={'source': 'reddit'}), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
 ```
 
+You can also use `rank_async`, which is essentially just a wrapper to turn `rank()` into a coroutine. The result will be the same:
+
+```python
+> results = await ranker.rank_async(query="I love you", docs=["I hate you", "I really like you"], doc_ids=[0,1])
+> results
+RankedResults(results=[Result(document=Document(text='I really like you', doc_id=0, metadata={'source': 'twitter'}), score=-2.453125, rank=1), Result(document=Document(text='I hate you', doc_id=1, metadata={'source': 'reddit'}), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
+```
+
 All rerankers will return a `RankedResults` object, which is a pydantic object containing a list of `Result` objects and some other useful information, such as the original query. You can retrieve the top `k` results from it by running `top_k()`:
 
 ```python
@@ -158,8 +182,8 @@ Models:
 - ✅ Any standard SentenceTransformer or Transformers cross-encoder
 - 🟠 RankGPT (Implemented using original repo, but missing the rankllm's repo improvements)
 - ✅ T5-based pointwise rankers (InRanker, MonoT5...)
-- ✅ Cohere API rerankers
-- ✅ Jina API rerankers
+- ✅ Cohere, Jina, Voyage and MixedBread API rerankers
+- ✅ [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers (ONNX-optimised models, very fast on CPU)
 - 🟠 ColBERT-based reranker - not a model initially designed for reranking, but quite strong (Implementation could be optimised and is from a third-party implementation.)
 - 📍 MixedBread API (Reranking API not yet released)
 - 📍⭐ RankLLM/RankZephyr (Proper RankLLM implementation will replace the RankGPT one, and introduce RankZephyr support)

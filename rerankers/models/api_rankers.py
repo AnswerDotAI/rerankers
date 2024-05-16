@@ -12,7 +12,8 @@ import json
 URLS = {
     "cohere": "https://api.cohere.ai/v1/rerank",
     "jina": "https://api.jina.ai/v1/rerank",
-    "mixedbread": NotImplemented,
+    "voyage": "https://api.voyageai.com/v1/rerank",
+    "mixedbread.ai": "https://api.mixedbread.ai/v1/reranking",
 }
 
 
@@ -30,17 +31,40 @@ class APIRanker(BaseRanker):
         }
         self.url = URLS[self.api_provider]
 
-    def _parse_response(self, response: dict, docs: List[Document]) -> RankedResults:
+
+    def _get_document_text(self, r: dict) -> str:
+        if self.api_provider == "voyage":
+            return r["document"]
+        elif self.api_provider == "mixedbread.ai":
+            return r["input"]
+        else:
+            return r["document"]["text"]
+
+    def _get_score(self, r: dict) -> float:
+        if self.api_provider == "mixedbread.ai":
+            return r["score"]
+        return r["relevance_score"]
+
+    def _parse_response(
+        self, response: dict,  docs: List[Document],
+    ) -> RankedResults:
         ranked_docs = []
-        if self.api_provider == "cohere" or self.api_provider == "jina":
-            for i, r in enumerate(response["results"]):
-                ranked_docs.append(
-                    Result(
-                        document=docs[r["index"]],
-                        score=r["relevance_score"],
-                        rank=i + 1,
-                    )
+        results_key = (
+            "results"
+            if self.api_provider not in ["voyage", "mixedbread.ai"]
+            else "data"
+        )
+        print(response)
+
+        for i, r in enumerate(response[results_key]):
+            ranked_docs.append(
+                Result(
+                    document=docs[r["index"]],
+                    text=self._get_document_text(r),
+                    score=self._get_score(r),
+                    rank=i + 1,
                 )
+            )
 
         return ranked_docs
 
@@ -57,17 +81,26 @@ class APIRanker(BaseRanker):
         results = self._parse_response(response.json(), docs)
         return RankedResults(results=results, query=query, has_scores=True)
 
-    def _format_payload(self, query: str, docs: List[Document]) -> str:
-        if self.api_provider == "cohere" or self.api_provider == "jina":
-            return json.dumps(
-                {
-                    "model": self.model,
-                    "query": query,
-                    "documents": [d.text for d in docs],
-                    "top_n": len(docs),
-                    "return_documents": True,
-                }
-            )
+
+    def _format_payload(self, query: str, docs: List[str]) -> str:
+        top_key = (
+            "top_n" if self.api_provider not in ["voyage", "mixedbread.ai"] else "top_k"
+        )
+        documents_key = "documents" if self.api_provider != "mixedbread.ai" else "input"
+        return_documents_key = (
+            "return_documents"
+            if self.api_provider != "mixedbread.ai"
+            else "return_input"
+        )
+
+        payload = {
+            "model": self.model,
+            "query": query,
+            documents_key: [d.text for d in docs],
+            top_key: len(docs),
+            return_documents_key: True,
+        }
+        return json.dumps(payload)
 
     def score(self, query: str, doc: str) -> float:
         payload = self._format_payload(query, [doc])

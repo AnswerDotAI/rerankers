@@ -14,7 +14,7 @@ packages = [
 name = "rerankers" 
 
 
-version = "0.1.0"
+version = "0.2.0"
 
 description = "A unified API for various document re-ranking models."
 
@@ -52,10 +52,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-all = ["transformers", "torch", "litellm", "requests", "sentencepiece", "protobuf", "colbert-ai"]
+all = ["transformers", "torch", "litellm", "requests", "sentencepiece", "protobuf", "flashrank"]
 transformers = ["transformers", "torch", "sentencepiece", "protobuf"]
 api = ["requests"]
 gpt = ["litellm"]
+flashrank = ["flashrank"]
 dev = ["ruff", "isort", "pytest", "ipyprogress", "ipython", "ranx", "ir_datasets", "srsly"]
 
 [project.urls]
