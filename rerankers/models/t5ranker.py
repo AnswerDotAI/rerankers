@@ -136,11 +136,12 @@ class T5Ranker(BaseRanker):
         query: str,
         docs: Union[str, List[str], Document, List[Document]],
         doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
     ) -> RankedResults:
         """
         Ranks a list of documents based on their relevance to the query.
         """
-        docs = prep_docs(docs, doc_ids)
+        docs = prep_docs(docs, doc_ids, metadata)
         scores = self._get_scores(query, [d.text for d in docs])
         ranked_results = [
             Result(document=doc, score=score, rank=idx + 1)

@@ -128,10 +128,11 @@ class RankGPTRanker(BaseRanker):
         query: str,
         docs: Union[Document, List[Document]],
         doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
         rank_start: int = 0,
         rank_end: int = 0,
     ) -> RankedResults:
-        docs = prep_docs(docs, doc_ids)
+        docs = prep_docs(docs, doc_ids, metadata)
 
         item = make_item(query, [d.text for d in docs])
         messages = create_permutation_instruction(

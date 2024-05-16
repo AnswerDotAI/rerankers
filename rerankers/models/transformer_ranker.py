@@ -51,9 +51,10 @@ class TransformerRanker(BaseRanker):
         query: str,
         docs: Union[str, List[str], Document, List[Document]],
         doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
         batch_size: Optional[int] = None,
     ) -> RankedResults:
-        docs = prep_docs(docs, doc_ids)
+        docs = prep_docs(docs, doc_ids, metadata)
         inputs = [(query, doc.text) for doc in docs]
 
         # Override self.batch_size if explicitely set

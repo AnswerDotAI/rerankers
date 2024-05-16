@@ -62,6 +62,7 @@ def make_documents(
 def prep_docs(
     docs: Union[str, List[str], Document, List[Document]],
     doc_ids: Optional[Union[List[str], List[int]]] = None,
+    metadata: Optional[List[dict]] = None,
 ):
     if isinstance(docs, Document) or (
         isinstance(docs, List) and isinstance(docs[0], Document)
@@ -69,12 +70,13 @@ def prep_docs(
         if isinstance(docs, Document):
             docs = [docs]
         if doc_ids is not None:
-            print(
-                "Overriding doc_ids passed within the Document objects with explicitely passed doc_ids!"
-            )
-            print(
-                "This is not the preferred way of doing so, please double-check your code."
-            )
+            if docs[0].doc_id is not None:
+                print(
+                    "Overriding doc_ids passed within the Document objects with explicitely passed doc_ids!"
+                )
+                print(
+                    "This is not the preferred way of doing so, please double-check your code."
+                )
             for i, doc in enumerate(docs):
                 doc.doc_id = doc_ids[i]
 
@@ -86,14 +88,29 @@ def prep_docs(
                 )
                 doc_ids = list(range(len(docs)))
 
+        if metadata is not None:
+            if docs[0].meatadata is not None:
+                print(
+                    "Overriding doc_ids passed within the Document objects with explicitely passed doc_ids!"
+                )
+                print(
+                    "This is not the preferred way of doing so, please double-check your code."
+                )
+            for i, doc in enumerate(docs):
+                doc.metadata = metadata[i]
+
         return docs
 
     if isinstance(docs, str):
         docs = [docs]
-    if doc_ids is not None:
-        return [Document(doc, doc_id=doc_ids[i]) for i, doc in enumerate(docs)]
-    else:
-        return [Document(doc, doc_id=i) for i, doc in enumerate(docs)]
+    if doc_ids is None:
+        doc_ids = list(range(len(docs)))
+    if metadata is None:
+        metadata = [{} for _ in docs]
+    return [
+        Document(doc, doc_id=doc_ids[i], metadata=metadata[i])
+        for i, doc in enumerate(docs)
+    ]
 
 
 def get_chunks(iterable: Iterable, chunk_size: int):  # noqa: E741

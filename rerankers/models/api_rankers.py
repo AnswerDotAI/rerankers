@@ -49,8 +49,9 @@ class APIRanker(BaseRanker):
         query: str,
         docs: Union[str, List[str], Document, List[Document]],
         doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
     ) -> RankedResults:
-        docs = prep_docs(docs, doc_ids)
+        docs = prep_docs(docs, doc_ids, metadata)
         payload = self._format_payload(query, docs)
         response = requests.post(self.url, headers=self.headers, data=payload)
         results = self._parse_response(response.json(), docs)

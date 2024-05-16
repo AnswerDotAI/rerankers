@@ -119,8 +119,9 @@ class ColBERTRanker(BaseRanker):
         query: str,
         docs: Union[Document, str, List[Document], List[str]],
         doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
     ) -> RankedResults:
-        docs = prep_docs(docs, doc_ids)
+        docs = prep_docs(docs, doc_ids, metadata)
 
         scores = self._colbert_rank(query, [d.text for d in docs])
         ranked_results = [
