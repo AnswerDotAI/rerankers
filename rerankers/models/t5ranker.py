@@ -11,6 +11,8 @@ import torch
 from tqdm.auto import tqdm
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from rerankers.models.ranker import BaseRanker
+from rerankers.documents import Document
+
 
 import torch
 
@@ -19,8 +21,7 @@ from rerankers.utils import (
     vprint,
     get_device,
     get_dtype,
-    ensure_docids,
-    ensure_docs_list,
+    prep_docs,
     get_chunks,
 )
 
@@ -133,19 +134,19 @@ class T5Ranker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: List[str],
+        docs: Union[str, List[str], Document, List[Document]],
         doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
     ) -> RankedResults:
         """
         Ranks a list of documents based on their relevance to the query.
         """
-        docs = ensure_docs_list(docs)
-        doc_ids = ensure_docids(doc_ids, len(docs))
-        scores = self._get_scores(query, docs)
+        docs = prep_docs(docs, doc_ids, metadata)
+        scores = self._get_scores(query, [d.text for d in docs])
         ranked_results = [
-            Result(doc_id=doc_id, text=doc, score=score, rank=idx + 1)
-            for idx, (doc_id, doc, score) in enumerate(
-                sorted(zip(doc_ids, docs, scores), key=lambda x: x[2], reverse=True)
+            Result(document=doc, score=score, rank=idx + 1)
+            for idx, (doc, score) in enumerate(
+                sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)
             )
         ]
         return RankedResults(results=ranked_results, query=query, has_scores=True)

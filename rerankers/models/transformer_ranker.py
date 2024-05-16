@@ -1,4 +1,6 @@
 from rerankers.models.ranker import BaseRanker
+from rerankers.documents import Document
+
 
 import torch
 from typing import Union, List, Optional, Tuple
@@ -10,8 +12,7 @@ from rerankers.utils import (
     vprint,
     get_device,
     get_dtype,
-    ensure_docids,
-    ensure_docs_list,
+    prep_docs,
 )
 from rerankers.results import RankedResults, Result
 
@@ -48,13 +49,13 @@ class TransformerRanker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: List[str],
-        doc_ids: Optional[List[Union[str, int]]] = None,
+        docs: Union[str, List[str], Document, List[Document]],
+        doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
         batch_size: Optional[int] = None,
     ) -> RankedResults:
-        docs = ensure_docs_list(docs)
-        doc_ids = ensure_docids(doc_ids, len(docs))
-        inputs = [(query, doc) for doc in docs]
+        docs = prep_docs(docs, doc_ids, metadata)
+        inputs = [(query, doc.text) for doc in docs]
 
         # Override self.batch_size if explicitely set
         if batch_size is None:
@@ -71,13 +72,16 @@ class TransformerRanker(BaseRanker):
                 scores.append(batch_scores)
             else:
                 scores.extend(batch_scores)
-        ranked_results = [
-            Result(doc_id=doc_id, text=doc, score=score, rank=idx + 1)
-            for idx, (doc_id, doc, score) in enumerate(
-                sorted(zip(doc_ids, docs, scores), key=lambda x: x[2], reverse=True)
-            )
-        ]
-        return RankedResults(results=ranked_results, query=query, has_scores=True)
+        if len(scores) == 1:
+            return Result(document=docs[0], score=scores[0])
+        else:
+            ranked_results = [
+                Result(document=doc, score=score, rank=idx + 1)
+                for idx, (doc, score) in enumerate(
+                    sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)
+                )
+            ]
+            return RankedResults(results=ranked_results, query=query, has_scores=True)
 
     @torch.no_grad()
     def score(self, query: str, doc: str) -> float:

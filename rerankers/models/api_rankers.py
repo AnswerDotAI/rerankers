@@ -1,7 +1,9 @@
 from typing import Union, List, Optional
 from rerankers.models.ranker import BaseRanker
 from rerankers.results import RankedResults, Result
-from rerankers.utils import ensure_docids, ensure_docs_list
+from rerankers.utils import prep_docs
+from rerankers.documents import Document
+
 
 import requests
 import json
@@ -29,6 +31,7 @@ class APIRanker(BaseRanker):
         }
         self.url = URLS[self.api_provider]
 
+
     def _get_document_text(self, r: dict) -> str:
         if self.api_provider == "voyage":
             return r["document"]
@@ -43,7 +46,7 @@ class APIRanker(BaseRanker):
         return r["relevance_score"]
 
     def _parse_response(
-        self, response: dict, doc_ids: Union[List[str], List[int]]
+        self, response: dict,  docs: List[Document],
     ) -> RankedResults:
         ranked_docs = []
         results_key = (
@@ -56,7 +59,7 @@ class APIRanker(BaseRanker):
         for i, r in enumerate(response[results_key]):
             ranked_docs.append(
                 Result(
-                    doc_id=doc_ids[r["index"]],
+                    document=docs[r["index"]],
                     text=self._get_document_text(r),
                     score=self._get_score(r),
                     rank=i + 1,
@@ -68,15 +71,16 @@ class APIRanker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: Union[str, List[str]],
+        docs: Union[str, List[str], Document, List[Document]],
         doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
     ) -> RankedResults:
-        docs = ensure_docs_list(docs)
-        doc_ids = ensure_docids(doc_ids, len(docs))
+        docs = prep_docs(docs, doc_ids, metadata)
         payload = self._format_payload(query, docs)
         response = requests.post(self.url, headers=self.headers, data=payload)
-        results = self._parse_response(response.json(), doc_ids)
+        results = self._parse_response(response.json(), docs)
         return RankedResults(results=results, query=query, has_scores=True)
+
 
     def _format_payload(self, query: str, docs: List[str]) -> str:
         top_key = (
@@ -92,7 +96,7 @@ class APIRanker(BaseRanker):
         payload = {
             "model": self.model,
             "query": query,
-            documents_key: docs,
+            documents_key: [d.text for d in docs],
             top_key: len(docs),
             return_documents_key: True,
         }

@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, Union
-from rerankers.results import RankedResults
 from asyncio import get_event_loop
 from functools import partial
+from typing import List, Optional, Union
+from rerankers.results import RankedResults
+from rerankers.documents import Document
+
 
 class BaseRanker(ABC):
     @abstractmethod
@@ -17,8 +19,8 @@ class BaseRanker(ABC):
     def rank(
         self,
         query: str,
-        docs: List[str],
-        doc_ids: Optional[Union[List[str], str]] = None,
+        docs: Union[str, List[str], Document, List[Document]],
+        doc_ids: Optional[Union[List[str], List[int]]] = None,
     ) -> RankedResults:
         """
         End-to-end reranking of documents.
