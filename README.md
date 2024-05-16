@@ -126,7 +126,7 @@ RankedResults(results=[Result(document=Document(text='I really like you', doc_id
 You don't need to pass `doc_ids`! If not provided, they'll be auto-generated as integers corresponding to the index of a document in `docs`.
 
 
-You're free to pass metadata to the documents, and it'll be stored with the documents. It'll also be accessible in the results object:
+You're free to pass metadata too, and it'll be stored with the documents. It'll also be accessible in the results object:
 
 ```python
 > results = ranker.rank(query="I love you", docs=["I hate you", "I really like you"], doc_ids=[0,1], metadata=[{'source': 'twitter'}, {'source': 'reddit'}])
