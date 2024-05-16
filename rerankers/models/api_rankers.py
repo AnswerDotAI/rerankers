@@ -1,7 +1,7 @@
 from typing import Union, List, Optional
 from rerankers.models.ranker import BaseRanker
 from rerankers.results import RankedResults, Result
-from rerankers.utils import ensure_docids, ensure_docs_list
+from rerankers.utils import prep_docs
 from rerankers.documents import Document
 
 
@@ -30,15 +30,13 @@ class APIRanker(BaseRanker):
         }
         self.url = URLS[self.api_provider]
 
-    def _parse_response(
-        self, response: dict, docs: List[Document]
-    ) -> RankedResults:
+    def _parse_response(self, response: dict, docs: List[Document]) -> RankedResults:
         ranked_docs = []
         if self.api_provider == "cohere" or self.api_provider == "jina":
             for i, r in enumerate(response["results"]):
                 ranked_docs.append(
                     Result(
-                        document = docs[r["index"]],
+                        document=docs[r["index"]],
                         score=r["relevance_score"],
                         rank=i + 1,
                     )
@@ -49,10 +47,10 @@ class APIRanker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: Union[Document, List[Document]],
+        docs: Union[str, List[str], Document, List[Document]],
+        doc_ids: Optional[Union[List[str], List[int]]] = None,
     ) -> RankedResults:
-        if isinstance(docs, Document):
-            docs = [docs]
+        docs = prep_docs(docs, doc_ids)
         payload = self._format_payload(query, docs)
         response = requests.post(self.url, headers=self.headers, data=payload)
         results = self._parse_response(response.json(), docs)

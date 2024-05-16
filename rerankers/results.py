@@ -4,7 +4,6 @@ from pydantic import BaseModel, validator
 from rerankers.documents import Document
 
 
-
 class Result(BaseModel):
     document: Document
     score: Optional[float] = None
@@ -15,6 +14,13 @@ class Result(BaseModel):
         if v is None and values.get("score") is None:
             raise ValueError("Either score or rank must be provided.")
         return v
+
+    def __getattr__(self, item):
+        if item in self.document.model_fields:
+            return getattr(self.document, item)
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{item}'"
+        )
 
 
 class RankedResults(BaseModel):
@@ -42,5 +48,5 @@ class RankedResults(BaseModel):
 
     def get_score_by_docid(self, doc_id: Union[int, str]) -> Optional[float]:
         """Fetches the score of a result by its doc_id using a more efficient approach."""
-        result = next((r for r in self.results if r.document.id == doc_id), None)
+        result = next((r for r in self.results if r.document.doc_id == doc_id), None)
         return result.score if result else None

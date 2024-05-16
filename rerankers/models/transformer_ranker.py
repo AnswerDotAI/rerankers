@@ -12,8 +12,7 @@ from rerankers.utils import (
     vprint,
     get_device,
     get_dtype,
-    ensure_docids,
-    ensure_docs_list,
+    prep_docs,
 )
 from rerankers.results import RankedResults, Result
 
@@ -50,11 +49,11 @@ class TransformerRanker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: List[Document],
+        docs: Union[str, List[str], Document, List[Document]],
+        doc_ids: Optional[Union[List[str], List[int]]] = None,
         batch_size: Optional[int] = None,
     ) -> RankedResults:
-        if isinstance(docs, Document):
-            docs = [docs]
+        docs = prep_docs(docs, doc_ids)
         inputs = [(query, doc.text) for doc in docs]
 
         # Override self.batch_size if explicitely set

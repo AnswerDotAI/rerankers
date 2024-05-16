@@ -21,8 +21,7 @@ from rerankers.utils import (
     vprint,
     get_device,
     get_dtype,
-    ensure_docids,
-    ensure_docs_list,
+    prep_docs,
     get_chunks,
 )
 
@@ -135,13 +134,13 @@ class T5Ranker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: Union[Document, List[Document]]
+        docs: Union[str, List[str], Document, List[Document]],
+        doc_ids: Optional[Union[List[str], List[int]]] = None,
     ) -> RankedResults:
         """
         Ranks a list of documents based on their relevance to the query.
         """
-        if isinstance(docs, Document):
-            docs = [docs]
+        docs = prep_docs(docs, doc_ids)
         scores = self._get_scores(query, [d.text for d in docs])
         ranked_results = [
             Result(document=doc, score=score, rank=idx + 1)

@@ -12,7 +12,7 @@ from litellm import completion
 from rerankers.models.ranker import BaseRanker
 from rerankers.documents import Document
 from rerankers.results import RankedResults, Result
-from rerankers.utils import vprint, ensure_docids, ensure_docs_list
+from rerankers.utils import vprint, prep_docs
 
 
 def get_prefix_prompt(query, num):
@@ -127,11 +127,11 @@ class RankGPTRanker(BaseRanker):
         self,
         query: str,
         docs: Union[Document, List[Document]],
+        doc_ids: Optional[Union[List[str], List[int]]] = None,
         rank_start: int = 0,
         rank_end: int = 0,
     ) -> RankedResults:
-        if isinstance(docs, Document):
-            docs = [docs]
+        docs = prep_docs(docs, doc_ids)
 
         item = make_item(query, [d.text for d in docs])
         messages = create_permutation_instruction(
@@ -148,7 +148,10 @@ class RankGPTRanker(BaseRanker):
         ranked_docs = []
         for idx, doc in enumerate(item["hits"]):
             ranked_docs.append(
-                Result(document=list(filter(lambda x: x.text == doc['content'], docs))[0], rank=idx + 1)
+                Result(
+                    document=list(filter(lambda x: x.text == doc["content"], docs))[0],
+                    rank=idx + 1,
+                )
             )
         ranked_results = RankedResults(
             results=ranked_docs, query=query, has_scores=False

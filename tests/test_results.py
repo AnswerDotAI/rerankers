@@ -15,13 +15,13 @@ def test_ranked_results_functions():
     assert results.results_count() == 2
     top_k = results.top_k(1)
     assert len(top_k) == 1
-    assert top_k[0].id == 1
+    assert top_k[0].doc_id == 1
     assert results.get_score_by_docid(0) == 0.9
 
 
 def test_result_attributes():
     result = Result(document=Document(id=1, text="Doc 1"), score=0.95, rank=1)
-    assert result.id == 1
+    assert result.doc_id == 1
     assert result.text == "Doc 1"
     assert result.score == 0.95
     assert result.rank == 1

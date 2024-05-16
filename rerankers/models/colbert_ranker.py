@@ -9,13 +9,7 @@ from math import ceil
 from rerankers.models.ranker import BaseRanker
 from rerankers.documents import Document
 from rerankers.results import RankedResults, Result
-from rerankers.utils import (
-    vprint,
-    get_device,
-    get_dtype,
-    ensure_docids,
-    ensure_docs_list,
-)
+from rerankers.utils import vprint, get_device, get_dtype, prep_docs
 
 
 def _insert_token(
@@ -123,10 +117,11 @@ class ColBERTRanker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: List[Document],
+        docs: Union[Document, str, List[Document], List[str]],
+        doc_ids: Optional[Union[List[str], List[int]]] = None,
     ) -> RankedResults:
-        if isinstance(docs, Document):
-            docs = [docs]
+        docs = prep_docs(docs, doc_ids)
+
         scores = self._colbert_rank(query, [d.text for d in docs])
         ranked_results = [
             Result(document=doc, score=score, rank=idx + 1)

@@ -103,19 +103,26 @@ Then, regardless of which reranker is loaded, use the loaded model to rank a que
 
 ```python
 > from rerankers.documents import Document
-> docs = [Document("I really like you", id=0), Document("I hate you", id=1)]
-> results = ranker.rank("I love you", docs)
+> docs =["I really like you", id=0), Document("I hate you", id=1)]
+> results = ranker.rank(query="I love you", docs=["I hate you", "I really like you"], doc_ids=[0,1])
 > results
 RankedResults(results=[Result(document=Document(text='I really like you', id=0), score=-2.453125, rank=1), Result(document=Document(text='I hate you', id=1), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
 ```
 
-You don't need to pass `doc_ids`!
+You don't need to pass `doc_ids`! If not provided, they'll be auto-generated as integers corresponding to the index of a document in `docs`.
 
 All rerankers will return a `RankedResults` object, which is a pydantic object containing a list of `Result` objects and some other useful information, such as the original query. You can retrieve the top `k` results from it by running `top_k()`:
 
 ```python
 > results.top_k(1)
-[Result(doc_id=1, text='I really like you', score=0.26170814, rank=1)]
+[Result(Document(doc_id=1, text='I really like you', metadata={}), score=0.26170814, rank=1)]
+```
+
+The Result objects are transparent when trying to access the documents they store, as `Document` objects simply exist as an easy way to store IDs and metadata. If you want to access a given result's text or metadata, you can directly access it as a property:
+
+```python
+> results.top_k(1)[0].text
+'I really like you'
 ```
 
 And that's all you need to know to get started quickly! Check out the overview notebook for more information on the API and the different models, or the langchain example to see how to integrate this in your langchain pipeline.
