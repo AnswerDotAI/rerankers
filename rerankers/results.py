@@ -18,6 +18,10 @@ class Result(BaseModel):
     def __getattr__(self, item):
         if item in self.document.model_fields:
             return getattr(self.document, item)
+        elif item in self.model_fields:
+            return getattr(self, item)
+        elif item in self.document.metadata:
+            return self.document.metadata[item]
         raise AttributeError(
             f"'{self.__class__.__name__}' object has no attribute '{item}'"
         )
