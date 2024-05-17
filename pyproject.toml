@@ -14,7 +14,7 @@ packages = [
 name = "rerankers" 
 
 
-version = "0.2.0"
+version = "0.3.0"
 
 description = "A unified API for various document re-ranking models."
 
@@ -52,12 +52,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-all = ["transformers", "torch", "litellm", "requests", "sentencepiece", "protobuf", "flashrank"]
-transformers = ["transformers", "torch", "sentencepiece", "protobuf"]
+all = ["transformers", "torch", "litellm", "requests", "sentencepiece", "protobuf", "flashrank", "rank-llm"]
+transformers = ["transformers", "torch", "sentencepiece",  "protobuf"]
 api = ["requests"]
 gpt = ["litellm"]
 flashrank = ["flashrank"]
+rankllm = ["rank-llm"]
 dev = ["ruff", "isort", "pytest", "ipyprogress", "ipython", "ranx", "ir_datasets", "srsly"]
 
 [project.urls]
-"Homepage" = "https://github.com/bclavie/rerankers"
+"Homepage" = "https://github.com/answerdotai/rerankers"

@@ -14,7 +14,8 @@ Welcome to `rerankers`! Our goal is to provide users with a simple API to use an
 
 ## Updates
 
-- v0.2.0: 🆕 [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers, Basic async support thanks to [@tarunamasa](https://github.com/tarunamasa), MixedBread.ai reranking API
+- v0.3.0: 🆕 Many changes! Experimental support for RankLLM, directly backed by the [rank-llm library](https://github.com/castorini/rank_llm). A new `Document` object, courtesy of joint-work by [@bclavie](https://github.com/bclavie) and [Anmol6](https://github.com/Anmol6). This object is transparent, but now offers support for `metadata` stored alongside each document. Many small QoL changes (RankedResults can be itered on directly...)
+- v0.2.0: [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers, Basic async support thanks to [@tarunamasa](https://github.com/tarunamasa), MixedBread.ai reranking API
 - v0.1.2: Voyage reranking API
 - v0.1.1: Langchain integration fixed!
 - v0.1.0: Initial release
@@ -58,6 +59,9 @@ pip install "rerankers[api]"
 
 # FlashRank rerankers (ONNX-optimised, very fast on CPU)
 pip install "rerankers[fastrank]"
+
+# RankLLM rerankers (better RankGPT + support for local models such as RankZephyr and RankVicuna)
+pip install "rerankers[rankllm]"
 
 # All of the above
 pip install "rerankers[all]"
@@ -105,11 +109,26 @@ ranker = Reranker("rankgpt3", api_key = API_KEY)
 # RankGPT with another LLM provider
 ranker = Reranker("MY_LLM_NAME" (check litellm docs), model_type = "rankgpt", api_key = API_KEY)
 
+# RankLLM with default GPT (GPT-4o)
+ranker = Reranker("rankllm", api_key = API_KEY)
+
+# RankLLM with specified GPT models
+ranker = Reranker('gpt-4-turbo', model_type="rankllm", api_key = API_KEY)
+
+# EXPERIMENTAL: RankLLM with RankZephyr
+ranker = Reranker('rankzephyr')
+
 # ColBERTv2 reranker
 ranker = Reranker("colbert")
 
 # ... Or a non-default colbert model:
 ranker = Reranker(model_name_or_path, model_type = "colbert")
+
+# Flashrank
+ranker = Reranker('flashrank')
+
+# ... Or a specific model
+ranker = Reranker('ms-marco-TinyBERT-L-2-v2', model_type='flashrank')
 
 ```
 
@@ -180,18 +199,18 @@ Legend:
 
 Models:
 - ✅ Any standard SentenceTransformer or Transformers cross-encoder
-- 🟠 RankGPT (Implemented using original repo, but missing the rankllm's repo improvements)
+- ✅ RankGPT (Available both via the original RankGPT implementation and the improved RankLLM one)
 - ✅ T5-based pointwise rankers (InRanker, MonoT5...)
 - ✅ Cohere, Jina, Voyage and MixedBread API rerankers
 - ✅ [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers (ONNX-optimised models, very fast on CPU)
 - 🟠 ColBERT-based reranker - not a model initially designed for reranking, but quite strong (Implementation could be optimised and is from a third-party implementation.)
-- 📍 MixedBread API (Reranking API not yet released)
-- 📍⭐ RankLLM/RankZephyr (Proper RankLLM implementation will replace the RankGPT one, and introduce RankZephyr support)
+- 🟠⭐ RankLLM/RankZephyr: supported by wrapping the [rank-llm library](https://github.com/castorini/rank_llm) library! Support for RankZephyr/RankVicuna is untested, but RankLLM + GPT models fully works!
 - 📍 LiT5
 
 Features:
+- ✅ Metadata!
 - ✅ Reranking 
 - ✅ Consistency notebooks to ensure performance on `scifact` matches the litterature for any given model implementation (Except RankGPT, where results are harder to reproduce).
+- ✅ ONNX runtime support --> Offered through [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) -- in line with the philosophy of the lib, we won't reinvent the wheel when @PrithivirajDamodaran is doing amazing work!
 - 📍 Training on Python >=3.10 (via interfacing with other libraries)
-- 📍 ONNX runtime support --> Unlikely to be immediate
 - ❌(📍Maybe?) Training via rerankers directly

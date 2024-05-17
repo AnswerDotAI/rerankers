@@ -4,12 +4,9 @@ from flashrank import Ranker, RerankRequest
 
 
 from typing import Union, List, Optional, Tuple
-from rerankers.utils import (
-    vprint,
-    ensure_docids,
-    ensure_docs_list,
-)
+from rerankers.utils import vprint, prep_docs
 from rerankers.results import RankedResults, Result
+from rerankers.documents import Document
 
 
 class FlashRankRanker(BaseRanker):
@@ -34,20 +31,21 @@ class FlashRankRanker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: List[str],
-        doc_ids: Optional[List[Union[str, int]]] = None,
+        docs: Union[str, List[str], Document, List[Document]],
+        doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
     ) -> RankedResults:
-        docs = ensure_docs_list(docs)
-        doc_ids = ensure_docids(doc_ids, len(docs))
-        passages = [{"id": doc_id, "text": doc} for doc_id, doc in zip(doc_ids, docs)]
+        docs = prep_docs(docs, doc_ids, metadata)
+        passages = [
+            {"id": doc_idx, "text": doc.text} for doc_idx, doc in enumerate(docs)
+        ]
 
         rerank_request = RerankRequest(query=query, passages=passages)
         flashrank_results = self.model.rerank(rerank_request)
 
         ranked_results = [
             Result(
-                doc_id=result["id"],
-                text=result["text"],
+                document=docs[idx],
                 score=result["score"],
                 rank=idx + 1,
             )
