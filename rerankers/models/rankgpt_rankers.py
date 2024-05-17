@@ -126,7 +126,7 @@ class RankGPTRanker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: Union[Document, List[Document]],
+        docs: Union[str, List[str], Document, List[Document]],
         doc_ids: Optional[Union[List[str], List[int]]] = None,
         metadata: Optional[List[dict]] = None,
         rank_start: int = 0,
