@@ -32,6 +32,10 @@ class RankedResults(BaseModel):
     query: str
     has_scores: bool = False
 
+    def __iter__(self):
+        """Allows iteration over the results list."""
+        return iter(self.results)
+
     def results_count(self) -> int:
         """Returns the total number of results."""
         return len(self.results)
