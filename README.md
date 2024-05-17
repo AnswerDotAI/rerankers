@@ -61,6 +61,7 @@ pip install "rerankers[api]"
 pip install "rerankers[fastrank]"
 
 # RankLLM rerankers (better RankGPT + support for local models such as RankZephyr and RankVicuna)
+# Note: RankLLM is only supported on Python 3.10+! This will not work with Python 3.9
 pip install "rerankers[rankllm]"
 
 # All of the above
