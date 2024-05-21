@@ -1,4 +1,5 @@
 from typing import Union, Optional, List, Iterable
+from rerankers.documents import Document
 
 
 def vprint(txt: str, verbose: int) -> None:
@@ -49,23 +50,67 @@ except ImportError:
     print("Torch not installed...")
 
 
-def ensure_docids(
-    doc_ids: Optional[Union[List[str], List[int]]], len_docs: int
-) -> Union[List[str], List[int]]:
+def make_documents(
+    docs: List[str],
+    doc_ids: Optional[Union[List[str], List[int]]] = None,
+):
     if doc_ids is None:
-        return list(range(len_docs))
-    return doc_ids
+        doc_ids = list(range(len(docs)))
+    return [Document(doc, doc_id=doc_ids[i]) for i, doc in enumerate(docs)]
 
 
-def ensure_docs_list(docs: Union[str, List[str]]) -> List[str]:
-    if isinstance(docs, str):
-        return [docs]
-    elif isinstance(docs, List) and all(isinstance(doc, str) for doc in docs):
+def prep_docs(
+    docs: Union[str, List[str], Document, List[Document]],
+    doc_ids: Optional[Union[List[str], List[int]]] = None,
+    metadata: Optional[List[dict]] = None,
+):
+    if isinstance(docs, Document) or (
+        isinstance(docs, List) and isinstance(docs[0], Document)
+    ):
+        if isinstance(docs, Document):
+            docs = [docs]
+        if doc_ids is not None:
+            if docs[0].doc_id is not None:
+                print(
+                    "Overriding doc_ids passed within the Document objects with explicitely passed doc_ids!"
+                )
+                print(
+                    "This is not the preferred way of doing so, please double-check your code."
+                )
+            for i, doc in enumerate(docs):
+                doc.doc_id = doc_ids[i]
+
+        elif doc_ids is None:
+            doc_ids = [doc.doc_id for doc in docs]
+            if doc_ids[0] is None:
+                print(
+                    "'None' doc_ids detected, reverting to auto-generated integer ids..."
+                )
+                doc_ids = list(range(len(docs)))
+
+        if metadata is not None:
+            if docs[0].meatadata is not None:
+                print(
+                    "Overriding doc_ids passed within the Document objects with explicitely passed doc_ids!"
+                )
+                print(
+                    "This is not the preferred way of doing so, please double-check your code."
+                )
+            for i, doc in enumerate(docs):
+                doc.metadata = metadata[i]
+
         return docs
-    else:
-        raise ValueError(
-            f"docs must be a string or a list of strings, not {type(docs)}"
-        )
+
+    if isinstance(docs, str):
+        docs = [docs]
+    if doc_ids is None:
+        doc_ids = list(range(len(docs)))
+    if metadata is None:
+        metadata = [{} for _ in docs]
+    return [
+        Document(doc, doc_id=doc_ids[i], metadata=metadata[i])
+        for i, doc in enumerate(docs)
+    ]
 
 
 def get_chunks(iterable: Iterable, chunk_size: int):  # noqa: E741

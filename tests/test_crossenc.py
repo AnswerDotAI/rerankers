@@ -3,7 +3,7 @@ import torch
 from rerankers import Reranker
 from rerankers.models.transformer_ranker import TransformerRanker
 from rerankers.results import Result, RankedResults
-
+from rerankers.documents import Document
 
 @patch("rerankers.models.transformer_ranker.TransformerRanker.rank")
 def test_transformer_ranker_rank(mock_rank):
@@ -15,14 +15,12 @@ def test_transformer_ranker_rank(mock_rank):
     expected_results = RankedResults(
         results=[
             Result(
-                doc_id=1,
-                text="Gone with the wind is an all-time classic",
+                document=Document(id=1, text="Gone with the wind is an all-time classic"),
                 score=1.6181640625,
                 rank=1,
             ),
             Result(
-                doc_id=0,
-                text="Gone with the wind is a masterclass in bad storytelling.",
+                document=Document(id=0, text="Gone with the wind is a masterclass in bad storytelling."),
                 score=0.88427734375,
                 rank=2,
             ),

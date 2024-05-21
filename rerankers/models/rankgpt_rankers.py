@@ -10,8 +10,9 @@ import copy
 from typing import Optional, Union, List, Dict
 from litellm import completion
 from rerankers.models.ranker import BaseRanker
+from rerankers.documents import Document
 from rerankers.results import RankedResults, Result
-from rerankers.utils import vprint, ensure_docids, ensure_docs_list
+from rerankers.utils import vprint, prep_docs
 
 
 def get_prefix_prompt(query, num):
@@ -125,14 +126,15 @@ class RankGPTRanker(BaseRanker):
     def rank(
         self,
         query: str,
-        docs: Union[str, List[str]],
+        docs: Union[str, List[str], Document, List[Document]],
         doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
         rank_start: int = 0,
         rank_end: int = 0,
     ) -> RankedResults:
-        docs = ensure_docs_list(docs)
-        doc_ids = ensure_docids(doc_ids, len(docs))
-        item = make_item(query, docs)
+        docs = prep_docs(docs, doc_ids, metadata)
+
+        item = make_item(query, [d.text for d in docs])
         messages = create_permutation_instruction(
             item=item,
             rank_start=rank_start,
@@ -147,7 +149,10 @@ class RankGPTRanker(BaseRanker):
         ranked_docs = []
         for idx, doc in enumerate(item["hits"]):
             ranked_docs.append(
-                Result(doc_id=doc_ids[idx], text=doc["content"], rank=idx + 1)
+                Result(
+                    document=list(filter(lambda x: x.text == doc["content"], docs))[0],
+                    rank=idx + 1,
+                )
             )
         ranked_results = RankedResults(
             results=ranked_docs, query=query, has_scores=False

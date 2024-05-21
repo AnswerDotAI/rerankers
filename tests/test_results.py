@@ -1,12 +1,13 @@
 import pytest
 from rerankers.results import Result, RankedResults
+from rerankers.documents import Document
 
 
 def test_ranked_results_functions():
     results = RankedResults(
         results=[
-            Result(doc_id=0, text="Doc 0", score=0.9, rank=2),
-            Result(doc_id=1, text="Doc 1", score=0.95, rank=1),
+            Result(document=Document(id=0, text="Doc 0"), score=0.9, rank=2),
+            Result(document=Document(id=1, text="Doc 1"), score=0.95, rank=1),
         ],
         query="Test Query",
         has_scores=True,
@@ -19,7 +20,7 @@ def test_ranked_results_functions():
 
 
 def test_result_attributes():
-    result = Result(doc_id=1, text="Doc 1", score=0.95, rank=1)
+    result = Result(document=Document(id=1, text="Doc 1"), score=0.95, rank=1)
     assert result.doc_id == 1
     assert result.text == "Doc 1"
     assert result.score == 0.95

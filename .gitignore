@@ -4,6 +4,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.flashrank_cache
+
 # C extensions
 *.so
 
