@@ -50,6 +50,10 @@ PREDICTION_TOKENS = {
     "unicamp-dl/ptt5-base-en-pt-msmarco-10k-v1": ["▁não", "▁sim"],
     "unicamp-dl/mt5-3B-mmarco-en-pt": ["▁", "▁true"],
     "unicamp-dl/mt5-13b-mmarco-100k": ["▁", "▁true"],
+    "unicamp-dl/monoptt5-small": ["▁Não", "▁Sim"],
+    "unicamp-dl/monoptt5-base": ["▁Não", "▁Sim"],
+    "unicamp-dl/monoptt5-large": ["▁Não", "▁Sim"],
+    "unicamp-dl/monoptt5-3b": ["▁Não", "▁Sim"],
 }
 
 
