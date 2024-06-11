@@ -50,6 +50,10 @@ PREDICTION_TOKENS = {
     "unicamp-dl/ptt5-base-en-pt-msmarco-10k-v1": ["▁não", "▁sim"],
     "unicamp-dl/mt5-3B-mmarco-en-pt": ["▁", "▁true"],
     "unicamp-dl/mt5-13b-mmarco-100k": ["▁", "▁true"],
+    "unicamp-dl/monoptt5-small": ["▁Não", "▁Sim"],
+    "unicamp-dl/monoptt5-base": ["▁Não", "▁Sim"],
+    "unicamp-dl/monoptt5-large": ["▁Não", "▁Sim"],
+    "unicamp-dl/monoptt5-3b": ["▁Não", "▁Sim"],
 }
 
 
@@ -58,6 +62,7 @@ def _get_output_tokens(model_name_or_path, token_false: str, token_true: str):
         if model_name_or_path in PREDICTION_TOKENS:
             token_false = PREDICTION_TOKENS[model_name_or_path][0]
         else:
+            token_false = PREDICTION_TOKENS["default"][0]
             print(
                 f"WARNING: Model {model_name_or_path} does not have known True/False tokens. Defaulting token_false to `{token_false}`."
             )
@@ -84,6 +89,7 @@ class T5Ranker(BaseRanker):
         token_false: str = "auto",
         token_true: str = "auto",
         return_logits: bool = False,
+        inputs_template: str = "Query: {query} Document: {text} Relevant:"
     ):
         """
         Implementation of the key functions from https://github.com/unicamp-dl/InRanker/blob/main/inranker/rankers.py
@@ -130,6 +136,8 @@ class T5Ranker(BaseRanker):
             )
         else:
             vprint("Returning normalised scores...", self.verbose)
+        self.inputs_template = inputs_template
+        vprint(f"Inputs template set to {inputs_template}", self.verbose)
 
     def rank(
         self,
@@ -189,7 +197,8 @@ class T5Ranker(BaseRanker):
             total=ceil(len(docs) / batch_size),
         ):
             queries_documents = [
-                f"Query: {query} Document: {text} Relevant:" for text in batch
+                self.inputs_template.format(query=query, text=text)
+                for text in batch
             ]
             tokenized = self.tokenizer(
                 queries_documents,
