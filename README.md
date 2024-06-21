@@ -126,12 +126,6 @@ ranker = Reranker("colbert")
 # ... Or a non-default colbert model:
 ranker = Reranker(model_name_or_path, model_type = "colbert")
 
-# Flashrank
-ranker = Reranker('flashrank')
-
-# ... Or a specific model
-ranker = Reranker('ms-marco-TinyBERT-L-2-v2', model_type='flashrank')
-
 ```
 
 _Rerankers will always try to infer the model you're trying to use based on its name, but it's always safer to pass a `model_type` argument to it if you can!_
