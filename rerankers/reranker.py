@@ -30,6 +30,7 @@ DEFAULTS = {
         "es": "AdrienB134/ColBERTv2.0-spanish-mmarcoES",
     },
     "flashrank": {"en": "ms-marco-MiniLM-L-12-v2", "other": "ms-marco-MultiBERT-L-12"},
+    "text-embeddings-inference": {"other": "BAAI/bge-reranker-base"}
 }
 
 DEPS_MAPPING = {
@@ -43,7 +44,7 @@ DEPS_MAPPING = {
     "RankLLMRanker": "rankllm",
 }
 
-PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai"]
+PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "text-embeddings-inference"]
 
 
 def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> str:
@@ -69,6 +70,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "cohere": "APIRanker",
             "jina": "APIRanker",
             "voyage": "APIRanker",
+            "text-embeddings-inference": "APIRanker",
             "rankgpt": "RankGPTRanker",
             "lit5": "LiT5Ranker",
             "t5": "T5Ranker",
@@ -92,6 +94,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "cohere": "APIRanker",
             "jina": "APIRanker",
             "voyage": "APIRanker",
+            "text-embeddings-inference": "APIRanker",
             "ms-marco-minilm-l-12-v2": "FlashRankRanker",
             "ms-marco-multibert-l-12": "FlashRankRanker",
             "vicuna": "RankLLMRanker",
