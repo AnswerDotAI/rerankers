@@ -60,7 +60,7 @@ pip install "rerankers[gpt]"
 pip install "rerankers[api]"
 
 # FlashRank rerankers (ONNX-optimised, very fast on CPU)
-pip install "rerankers[fastrank]"
+pip install "rerankers[flashrank]"
 
 # RankLLM rerankers (better RankGPT + support for local models such as RankZephyr and RankVicuna)
 # Note: RankLLM is only supported on Python 3.10+! This will not work with Python 3.9
