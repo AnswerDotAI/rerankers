@@ -67,6 +67,9 @@ pip install "rerankers[flashrank]"
 # Note: RankLLM is only supported on Python 3.10+! This will not work with Python 3.9
 pip install "rerankers[rankllm]"
 
+# To support LLM-Layerwise rerankers (which need flash-attention installed)
+pip install "rerankers[llmlayerwise]"
+
 # All of the above
 pip install "rerankers[all]"
 ```
@@ -119,11 +122,11 @@ ranker = Reranker("rankllm", api_key = API_KEY)
 # RankLLM with specified GPT models
 ranker = Reranker('gpt-4-turbo', model_type="rankllm", api_key = API_KEY)
 
-# EXPERIMENTAL: RankLLM with RankZephyr
-ranker = Reranker('rankzephyr')
-
 # ColBERTv2 reranker
 ranker = Reranker("colbert")
+
+# LLM Layerwise Reranker
+ranker = Reranker('llm-layerwise')
 
 # ... Or a non-default colbert model:
 ranker = Reranker(model_name_or_path, model_type = "colbert")
