@@ -45,3 +45,10 @@ try:
     AVAILABLE_RANKERS["RankLLMRanker"] = RankLLMRanker
 except ImportError:
     pass
+
+try:
+    from rerankers.models.llm_layerwise_ranker import LLMLayerWiseRanker
+
+    AVAILABLE_RANKERS["LLMLayerWiseRanker"] = LLMLayerWiseRanker
+except ImportError:
+    pass
