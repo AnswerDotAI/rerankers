@@ -36,6 +36,10 @@ class RankedResults(BaseModel):
         """Allows iteration over the results list."""
         return iter(self.results)
 
+    def __getitem__(self, index):
+        """Allows indexing to access results directly."""
+        return self.results[index]
+
     def results_count(self) -> int:
         """Returns the total number of results."""
         return len(self.results)
