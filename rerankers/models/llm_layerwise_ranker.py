@@ -79,21 +79,6 @@ class LLMLayerWiseRanker(BaseRanker):
         if self.prompt is None:
             self.prompt = PROMPTS.get(model_name_or_path, PROMPTS["default"])
 
-    def _last_logit_pool(
-        self,
-        logits: torch.Tensor,
-        attention_mask: torch.Tensor,
-    ) -> torch.Tensor:
-        left_padding = attention_mask[:, -1].sum() == attention_mask.shape[0]
-        if left_padding:
-            return logits[:, -1]
-        else:
-            sequence_lengths = attention_mask.sum(dim=1) - 1
-            batch_size = logits.shape[0]
-            return torch.stack(
-                [logits[i, sequence_lengths[i]] for i in range(batch_size)], dim=0
-            )
-
     def _get_inputs(self, pairs, max_sequence_length: int):
         prompt = self.prompt
         sep = "\n"
@@ -104,8 +89,6 @@ class LLMLayerWiseRanker(BaseRanker):
             "input_ids"
         ]
         inputs = []
-        query_lengths = []
-        prompt_lengths = []
         for query, passage in pairs:
             query_inputs = self.tokenizer(
                 f"A: {query}",
@@ -134,27 +117,13 @@ class LLMLayerWiseRanker(BaseRanker):
             item["input_ids"] = item["input_ids"] + sep_inputs + prompt_inputs
             item["attention_mask"] = [1] * len(item["input_ids"])
             inputs.append(item)
-            query_lengths.append(
-                len(
-                    [self.tokenizer.bos_token_id]
-                    + query_inputs["input_ids"]
-                    + sep_inputs
-                )
-            )
-            prompt_lengths.append(len(sep_inputs + prompt_inputs))
 
-        return (
-            self.tokenizer.pad(
-                inputs,
-                padding=True,
-                max_length=self.max_sequence_length
-                + len(sep_inputs)
-                + len(prompt_inputs),
-                pad_to_multiple_of=8,
-                return_tensors="pt",
-            ),
-            query_lengths,
-            prompt_lengths,
+        return self.tokenizer.pad(
+            inputs,
+            padding=True,
+            max_length=max_sequence_length + len(sep_inputs) + len(prompt_inputs),
+            pad_to_multiple_of=8,
+            return_tensors="pt",
         )
 
     @torch.no_grad()
@@ -184,15 +153,19 @@ class LLMLayerWiseRanker(BaseRanker):
         scores = []
 
         for batch in batched_pairs:
-            inputs, _, _ = self._get_inputs(
-                batch, max_sequence_length=max_sequence_length
-            )
+            inputs = self._get_inputs(batch, max_sequence_length=max_sequence_length)
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
 
-            outputs = self.model(**inputs, **self.params)
-            logits = outputs.logits
-            pooled_logits = self._last_logit_pool(logits, inputs["attention_mask"])
-            batch_scores = pooled_logits[:, 1].detach().cpu().numpy().tolist()
+            outputs = self.model(**inputs, return_dict=True, **self.params)
+            all_scores = [
+                scores[:, -1]
+                .view(
+                    -1,
+                )
+                .float()
+                for scores in outputs[0]
+            ]
+            batch_scores = all_scores[-1].cpu().numpy().tolist()
 
             scores.extend(batch_scores)
 
@@ -206,12 +179,20 @@ class LLMLayerWiseRanker(BaseRanker):
 
     @torch.no_grad()
     def score(self, query: str, doc: str) -> float:
-        inputs, _, _ = self._get_inputs([(query, doc)])
+        inputs = self._get_inputs(
+            [(query, doc)], max_sequence_length=self.max_sequence_length
+        )
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
 
-        outputs = self.model(**inputs, **self.params)
-        logits = outputs.logits
-        pooled_logits = self._last_logit_pool(logits, inputs["attention_mask"])
-        score = pooled_logits[0, 1].item()
+        outputs = self.model(**inputs, return_dict=True, **self.params)
+        all_scores = [
+            scores[:, -1]
+            .view(
+                -1,
+            )
+            .float()
+            for scores in outputs[0]
+        ]
+        score = all_scores[-1].item()
 
         return score
