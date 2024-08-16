@@ -30,7 +30,11 @@ DEFAULTS = {
         "es": "AdrienB134/ColBERTv2.0-spanish-mmarcoES",
     },
     "flashrank": {"en": "ms-marco-MiniLM-L-12-v2", "other": "ms-marco-MultiBERT-L-12"},
-    "text-embeddings-inference": {"other": "BAAI/bge-reranker-base"}
+    "text-embeddings-inference": {"other": "BAAI/bge-reranker-base"},
+    "llm-layerwise": {
+        "en": "BAAI/bge-reranker-v2.5-gemma2-lightweight",
+        "other": "BAAI/bge-reranker-v2.5-gemma2-lightweight",
+    },
 }
 
 DEPS_MAPPING = {
@@ -42,6 +46,7 @@ DEPS_MAPPING = {
     "ColBERTRanker": "transformers",
     "FlashRankRanker": "flashrank",
     "RankLLMRanker": "rankllm",
+    "LLMLayerWiseRanker": "transformers",
 }
 
 PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "text-embeddings-inference"]
@@ -78,6 +83,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "cross-encoder": "TransformerRanker",
             "flashrank": "FlashRankRanker",
             "rankllm": "RankLLMRanker",
+            "llm-layerwise": "LLMLayerWiseRanker",
         }
         return model_mapping.get(explicit_model_type, explicit_model_type)
     else:
@@ -89,7 +95,6 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "rankllm": "RankLLMRanker",
             "rankgpt": "RankGPTRanker",
             "gpt": "RankGPTRanker",
-            "zephyr": "RankZephyr",
             "colbert": "ColBERTRanker",
             "cohere": "APIRanker",
             "jina": "APIRanker",
@@ -99,6 +104,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "ms-marco-multibert-l-12": "FlashRankRanker",
             "vicuna": "RankLLMRanker",
             "zephyr": "RankLLMRanker",
+            "bge-reranker-v2.5-gemma2-lightweight": "LLMLayerWiseRanker",
         }
         for key, value in model_mapping.items():
             if key in model_name:
