@@ -141,7 +141,7 @@ Then, regardless of which reranker is loaded, use the loaded model to rank a que
 ```python
 > results = ranker.rank(query="I love you", docs=["I hate you", "I really like you"], doc_ids=[0,1])
 > results
-RankedResults(results=[Result(document=Document(text='I really like you', doc_id=0), score=-2.453125, rank=1), Result(document=Document(text='I hate you', doc_id=1), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
+RankedResults(results=[Result(document=Document(text='I really like you', doc_id=1), score=-2.453125, rank=1), Result(document=Document(text='I hate you', doc_id=0), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
 ```
 
 You don't need to pass `doc_ids`! If not provided, they'll be auto-generated as integers corresponding to the index of a document in `docs`.
@@ -152,7 +152,7 @@ You're free to pass metadata too, and it'll be stored with the documents. It'll 
 ```python
 > results = ranker.rank(query="I love you", docs=["I hate you", "I really like you"], doc_ids=[0,1], metadata=[{'source': 'twitter'}, {'source': 'reddit'}])
 > results
-RankedResults(results=[Result(document=Document(text='I really like you', doc_id=0, metadata={'source': 'twitter'}), score=-2.453125, rank=1), Result(document=Document(text='I hate you', doc_id=1, metadata={'source': 'reddit'}), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
+RankedResults(results=[Result(document=Document(text='I really like you', doc_id=1, metadata={'source': 'twitter'}), score=-2.453125, rank=1), Result(document=Document(text='I hate you', doc_id=0, metadata={'source': 'reddit'}), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
 ```
 
 If you'd like your code to be a bit cleaner, you can also directly construct `Document` objects yourself, and pass those instead. In that case, you don't need to pass separate `doc_ids` and `metadata`:
@@ -170,7 +170,7 @@ You can also use `rank_async`, which is essentially just a wrapper to turn `rank
 ```python
 > results = await ranker.rank_async(query="I love you", docs=["I hate you", "I really like you"], doc_ids=[0,1])
 > results
-RankedResults(results=[Result(document=Document(text='I really like you', doc_id=0, metadata={'source': 'twitter'}), score=-2.453125, rank=1), Result(document=Document(text='I hate you', doc_id=1, metadata={'source': 'reddit'}), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
+RankedResults(results=[Result(document=Document(text='I really like you', doc_id=1, metadata={'source': 'twitter'}), score=-2.453125, rank=1), Result(document=Document(text='I hate you', doc_id=0, metadata={'source': 'reddit'}), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
 ```
 
 All rerankers will return a `RankedResults` object, which is a pydantic object containing a list of `Result` objects and some other useful information, such as the original query. You can retrieve the top `k` results from it by running `top_k()`:
