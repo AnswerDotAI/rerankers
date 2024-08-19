@@ -88,7 +88,14 @@ class ColBERTModel(BertPreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
         self.bert = BertModel(config)
-        self.linear = nn.Linear(config.hidden_size, 128, bias=False)
+
+        # TODO: Load from artifact.metadata
+        if "small" in config._name_or_path:
+            linear_dim = 96
+        else:
+            linear_dim = 128
+        print("Linear Dim set to: {linear_dim} for downcasting")
+        self.linear = nn.Linear(config.hidden_size, linear_dim, bias=False)
         self.init_weights()
 
     def forward(
