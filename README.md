@@ -14,6 +14,7 @@ Welcome to `rerankers`! Our goal is to provide users with a simple API to use an
 
 ## Updates
 
+- v0.5.2: Minor ColBERT fixes
 - v0.5.1: Minor change making RankedResults subscribable, meaning results[0] will return the first result, etc...
 - v0.5.0: Added support for the current state-of-the-art rerankers, BAAI's series of `BGE` layerwise LLM rerankers, based on [Gemma](https://huggingface.co/BAAI/bge-reranker-v2.5-gemma2-lightweight) and MiniCPM. These are different from RankGPT, as they're not listwise: the models are repurposed as "cross-encoders", and do output logit scores.
 - v0.4.0: ColBERT performance improvement! It should now be faster and result in stronger results following implementation of the JaColBERTv2.5 dynamic query length method. This version also now supports HuggingFace's Text-Embedding-Server (TEI) inference as an API reranker option, thanks to [@srisudarsan](https://github.com/srisudarsan).

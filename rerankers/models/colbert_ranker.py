@@ -224,8 +224,12 @@ class ColBERTRanker(BaseRanker):
             self.verbose,
         )
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModel.from_pretrained(model_name, torch_dtype=dtype).to(
-            self.device
+        self.model = (
+            ColBERTModel.from_pretrained(
+                model_name,
+            )
+            .to(self.device)
+            .to(self.dtype)
         )
         self.model.eval()
         self.query_max_length = 32  # Lower bound
@@ -335,10 +339,10 @@ class ColBERTRanker(BaseRanker):
                 )
 
                 # Calculate QLEN dynamically for each query
-                if original_length % 32 <= 8:
+                if original_length % 16 <= 8:
                     QLEN = original_length + 8
                 else:
-                    QLEN = ceil(original_length / 32) * 32
+                    QLEN = ceil(original_length / 16) * 16
 
                 if original_length < QLEN:
                     pad_length = QLEN - original_length
@@ -372,7 +376,7 @@ class ColBERTRanker(BaseRanker):
                 batch_encoding = {
                     key: val[i : i + self.batch_size] for key, val in encoding.items()
                 }
-                batch_embs = self.model(**batch_encoding).last_hidden_state.squeeze(1)
+                batch_embs = self.model(**batch_encoding)
                 batched_embs.append(batch_embs)
             embs = torch.cat(batched_embs, dim=0)
         if self.normalize:
