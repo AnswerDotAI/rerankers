@@ -62,3 +62,8 @@ class RankedResults(BaseModel):
         """Fetches the score of a result by its doc_id using a more efficient approach."""
         result = next((r for r in self.results if r.document.doc_id == doc_id), None)
         return result.score if result else None
+
+    def get_result_by_docid(self, doc_id: [Union[int, str]]) -> Result:
+        """Fetches a result by its doc_id using a more efficient approach."""
+        result = next((r for r in self.results if r.document.doc_id == doc_id), None)
+        return result if result else None
