@@ -218,7 +218,7 @@ Features:
 If rerankers has been useful to you in academic work, please do feel free to cite the work below!
 
 ```
-@misc{clavié2024rerankerslightweightpythonlibrary,
+@misc{clavié2024rerankers,
       title={rerankers: A Lightweight Python Library to Unify Ranking Methods}, 
       author={Benjamin Clavié},
       year={2024},
