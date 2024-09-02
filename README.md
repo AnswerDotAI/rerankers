@@ -13,7 +13,7 @@ _A lightweight unified API for various reranking models. Developed by [@bclavie]
 Welcome to `rerankers`! Our goal is to provide users with a simple API to use any reranking models.
 
 ## Recent Updates
-_A longer release history can be found in the [Release History](#Release_History) section of this README._
+_A longer release history can be found in the [Release History](#release-history) section of this README._
 
 - v0.5.2: Minor ColBERT fixes
 - v0.5.1: Minor change making RankedResults subscribable, meaning results[0] will return the result for the first document, etc... ⚠️ This is sorted by **passed document order**, not by results, you should use `.top_k()` to get sorted results!
