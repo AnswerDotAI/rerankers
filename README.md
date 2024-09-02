@@ -12,18 +12,12 @@ _A lightweight unified API for various reranking models. Developed by [@bclavie]
 
 Welcome to `rerankers`! Our goal is to provide users with a simple API to use any reranking models.
 
-## Updates
+## Recent Updates
+_A longer release history can be found in the [Release History](#Release_History) section of this README._
 
 - v0.5.2: Minor ColBERT fixes
 - v0.5.1: Minor change making RankedResults subscribable, meaning results[0] will return the result for the first document, etc... ⚠️ This is sorted by **passed document order**, not by results, you should use `.top_k()` to get sorted results!
 - v0.5.0: Added support for the current state-of-the-art rerankers, BAAI's series of `BGE` layerwise LLM rerankers, based on [Gemma](https://huggingface.co/BAAI/bge-reranker-v2.5-gemma2-lightweight) and MiniCPM. These are different from RankGPT, as they're not listwise: the models are repurposed as "cross-encoders", and do output logit scores.
-- v0.4.0: ColBERT performance improvement! It should now be faster and result in stronger results following implementation of the JaColBERTv2.5 dynamic query length method. This version also now supports HuggingFace's Text-Embedding-Server (TEI) inference as an API reranker option, thanks to [@srisudarsan](https://github.com/srisudarsan).
-- v0.3.1: T5 bugfix and native default support for new Portuguese T5 rerankers.
-- v0.3.0: Many changes! Experimental support for RankLLM, directly backed by the [rank-llm library](https://github.com/castorini/rank_llm). A new `Document` object, courtesy of joint-work by [@bclavie](https://github.com/bclavie) and [Anmol6](https://github.com/Anmol6). This object is transparent, but now offers support for `metadata` stored alongside each document. Many small QoL changes (RankedResults can be itered on directly...)
-- v0.2.0: [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers, Basic async support thanks to [@tarunamasa](https://github.com/tarunamasa), MixedBread.ai reranking API
-- v0.1.2: Voyage reranking API
-- v0.1.1: Langchain integration fixed!
-- v0.1.0: Initial release
 
 ## Why `rerankers`?
 
@@ -218,3 +212,29 @@ Features:
 - ✅ ONNX runtime support --> Offered through [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) -- in line with the philosophy of the lib, we won't reinvent the wheel when @PrithivirajDamodaran is doing amazing work!
 - 📍 Training on Python >=3.10 (via interfacing with other libraries)
 - ❌(📍Maybe?) Training via rerankers directly
+
+## Reference
+
+If rerankers has been useful to you in academic work, please do feel free to cite the work below!
+
+```
+@misc{clavié2024rerankerslightweightpythonlibrary,
+      title={rerankers: A Lightweight Python Library to Unify Ranking Methods}, 
+      author={Benjamin Clavié},
+      year={2024},
+      eprint={2408.17344},
+      archivePrefix={arXiv},
+      primaryClass={cs.IR},
+      url={https://arxiv.org/abs/2408.17344}, 
+}
+```
+
+## Release History
+
+- v0.4.0: ColBERT performance improvement! It should now be faster and result in stronger results following implementation of the JaColBERTv2.5 dynamic query length method. This version also now supports HuggingFace's Text-Embedding-Server (TEI) inference as an API reranker option, thanks to [@srisudarsan](https://github.com/srisudarsan).
+- v0.3.1: T5 bugfix and native default support for new Portuguese T5 rerankers.
+- v0.3.0: Many changes! Experimental support for RankLLM, directly backed by the [rank-llm library](https://github.com/castorini/rank_llm). A new `Document` object, courtesy of joint-work by [@bclavie](https://github.com/bclavie) and [Anmol6](https://github.com/Anmol6). This object is transparent, but now offers support for `metadata` stored alongside each document. Many small QoL changes (RankedResults can be itered on directly...)
+- v0.2.0: [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers, Basic async support thanks to [@tarunamasa](https://github.com/tarunamasa), MixedBread.ai reranking API
+- v0.1.2: Voyage reranking API
+- v0.1.1: Langchain integration fixed!
+- v0.1.0: Initial release
