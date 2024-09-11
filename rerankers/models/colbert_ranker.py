@@ -94,7 +94,7 @@ class ColBERTModel(BertPreTrainedModel):
             linear_dim = 96
         else:
             linear_dim = 128
-        print("Linear Dim set to: {linear_dim} for downcasting")
+        print(f"Linear Dim set to: {linear_dim} for downcasting")
         self.linear = nn.Linear(config.hidden_size, linear_dim, bias=False)
         self.init_weights()
 
