@@ -72,7 +72,7 @@ def prep_docs(
         if doc_ids is not None:
             if docs[0].doc_id is not None:
                 print(
-                    "Overriding doc_ids passed within the Document objects with explicitely passed doc_ids!"
+                    "Overriding doc_ids passed within the Document objects with explicitly passed doc_ids!"
                 )
                 print(
                     "This is not the preferred way of doing so, please double-check your code."
@@ -91,7 +91,7 @@ def prep_docs(
         if metadata is not None:
             if docs[0].meatadata is not None:
                 print(
-                    "Overriding doc_ids passed within the Document objects with explicitely passed doc_ids!"
+                    "Overriding doc_ids passed within the Document objects with explicitly passed doc_ids!"
                 )
                 print(
                     "This is not the preferred way of doing so, please double-check your code."
