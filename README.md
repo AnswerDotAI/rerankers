@@ -1,11 +1,6 @@
 
 # rerankers
 
-![Python Versions](https://img.shields.io/badge/Python-3.8_3.9_3.10_3.11-blue)
-[![Downloads](https://static.pepy.tech/badge/rerankers/month)](https://pepy.tech/project/rerankers)
-[![Twitter Follow](https://img.shields.io/twitter/follow/bclavie?style=social)](https://twitter.com/bclavie)
-
-
 _A lightweight unified API for various reranking models. Developed by [@bclavie](https://twitter.com/bclavie) as a member of [answer.ai](https://www.answer.ai)_
 
 ---
@@ -184,38 +179,6 @@ The Result objects are transparent when trying to access the documents they stor
 
 And that's all you need to know to get started quickly! Check out the overview notebook for more information on the API and the different models, or the langchain example to see how to integrate this in your langchain pipeline.
 
-
-## Features
-
-Legend:
-- ✅ Supported
-- 🟠 Implemented, but not fully fledged
-- 📍 Not supported but intended to be in the future
-- ⭐ Same as above, but **important**.
-- ❌ Not supported & not currently planned
-
-Models:
-- ✅ Any standard SentenceTransformer or Transformers cross-encoder
-- ✅ RankGPT (Available both via the original RankGPT implementation and the improved RankLLM one)
-- ✅ T5-based pointwise rankers (InRanker, MonoT5...)
-- ✅ LLM-based pointwise rankers (BAAI/bge-reranker-v2.5-gemma2-lightweight, etc...)
-- ✅ Cohere, Jina, Voyage and MixedBread API rerankers
-- ✅ [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers (ONNX-optimised models, very fast on CPU)
-- ✅ ColBERT-based reranker - not a model initially designed for reranking, but does perform quite strongly in some cases. Implementation is lightweight, based only on transformers.
-- 🟠⭐ RankLLM/RankZephyr: supported by wrapping the [rank-llm library](https://github.com/castorini/rank_llm) library! Support for RankZephyr/RankVicuna is untested, but RankLLM + GPT models fully works!
-- 📍 LiT5
-
-Features:
-- ✅ Metadata!
-- ✅ Reranking 
-- ✅ Consistency notebooks to ensure performance on `scifact` matches the litterature for any given model implementation (Except RankGPT, where results are harder to reproduce).
-- ✅ ONNX runtime support --> Offered through [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) -- in line with the philosophy of the lib, we won't reinvent the wheel when @PrithivirajDamodaran is doing amazing work!
-- 📍 Training on Python >=3.10 (via interfacing with other libraries)
-- ❌(📍Maybe?) Training via rerankers directly
-
-## Reference
-
-If rerankers has been useful to you in academic work, please do feel free to cite the work below!
 
 ```
 @misc{clavié2024rerankers,
