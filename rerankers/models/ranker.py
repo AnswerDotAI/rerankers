@@ -33,10 +33,10 @@ class BaseRanker(ABC):
         docs: List[str],
         doc_ids: Optional[Union[List[str], str]] = None,
     ) -> RankedResults:
-
-
         loop = get_event_loop()
-        return await loop.run_in_executor(None, partial(self.rank, query, docs, doc_ids))
+        return await loop.run_in_executor(
+            None, partial(self.rank, query, docs, doc_ids)
+        )
 
     def as_langchain_compressor(self, k: int = 10):
         try:

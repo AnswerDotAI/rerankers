@@ -52,7 +52,9 @@ DEPS_MAPPING = {
 PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "text-embeddings-inference"]
 
 
-def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> str:
+def _get_api_provider(
+    model_name: str, model_type: Optional[str] = None
+) -> Optional[str]:
     if model_type in PROVIDERS or any(provider in model_name for provider in PROVIDERS):
         return model_type or next(
             (provider for provider in PROVIDERS if provider in model_name), None
@@ -137,7 +139,7 @@ def _get_defaults(
     model_type: Optional[str] = None,
     lang: str = "en",
     verbose: int = 1,
-) -> str:
+) -> tuple[Optional[str], Optional[str]]:
     if model_name in DEFAULTS.keys():
         print(f"Loading default {model_name} model for language {lang}")
         try:

@@ -16,26 +16,28 @@ URLS = {
     "mixedbread.ai": "https://api.mixedbread.ai/v1/reranking",
 }
 
-DOCUMENT_KEY_MAPPING = {
-    "mixedbread.ai": "input",
-    "text-embeddings-inference":"texts"
-}
+DOCUMENT_KEY_MAPPING = {"mixedbread.ai": "input", "text-embeddings-inference": "texts"}
 RETURN_DOCUMENTS_KEY_MAPPING = {
-    "mixedbread.ai":"return_input",
-    "text-embeddings-inference":"return_text"
+    "mixedbread.ai": "return_input",
+    "text-embeddings-inference": "return_text",
 }
 RESULTS_KEY_MAPPING = {
     "voyage": "data",
     "mixedbread.ai": "data",
-    "text-embeddings-inference": None
+    "text-embeddings-inference": None,
 }
-SCORE_KEY_MAPPING = {
-    "mixedbread.ai": "score",
-    "text-embeddings-inference":"score"
-}
+SCORE_KEY_MAPPING = {"mixedbread.ai": "score", "text-embeddings-inference": "score"}
+
 
 class APIRanker(BaseRanker):
-    def __init__(self, model: str, api_key: str, api_provider: str, verbose: int = 1, url: str = None):
+    def __init__(
+        self,
+        model: str,
+        api_key: str,
+        api_provider: str,
+        verbose: int = 1,
+        url: str = None,
+    ):
         self.api_key = api_key
         self.model = model
         self.api_provider = api_provider.lower()
@@ -48,7 +50,6 @@ class APIRanker(BaseRanker):
         }
         self.url = url if url else URLS[self.api_provider]
 
-
     def _get_document_text(self, r: dict) -> str:
         if self.api_provider == "voyage":
             return r["document"]
@@ -60,14 +61,16 @@ class APIRanker(BaseRanker):
             return r["document"]["text"]
 
     def _get_score(self, r: dict) -> float:
-        score_key = SCORE_KEY_MAPPING.get(self.api_provider,"relevance_score")
+        score_key = SCORE_KEY_MAPPING.get(self.api_provider, "relevance_score")
         return r[score_key]
 
     def _parse_response(
-        self, response: dict,  docs: List[Document],
+        self,
+        response: dict,
+        docs: List[Document],
     ) -> RankedResults:
         ranked_docs = []
-        results_key = RESULTS_KEY_MAPPING.get(self.api_provider,"results")
+        results_key = RESULTS_KEY_MAPPING.get(self.api_provider, "results")
         print(response)
 
         for i, r in enumerate(response[results_key] if results_key else response):
@@ -95,13 +98,14 @@ class APIRanker(BaseRanker):
         results = self._parse_response(response.json(), docs)
         return RankedResults(results=results, query=query, has_scores=True)
 
-
     def _format_payload(self, query: str, docs: List[str]) -> str:
         top_key = (
             "top_n" if self.api_provider not in ["voyage", "mixedbread.ai"] else "top_k"
         )
-        documents_key = DOCUMENT_KEY_MAPPING.get(self.api_provider,"documents")
-        return_documents_key = RETURN_DOCUMENTS_KEY_MAPPING.get(self.api_provider,"return_documents")
+        documents_key = DOCUMENT_KEY_MAPPING.get(self.api_provider, "documents")
+        return_documents_key = RETURN_DOCUMENTS_KEY_MAPPING.get(
+            self.api_provider, "return_documents"
+        )
 
         payload = {
             "model": self.model,

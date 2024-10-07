@@ -14,8 +14,6 @@ from rerankers.models.ranker import BaseRanker
 from rerankers.documents import Document
 
 
-import torch
-
 from rerankers.results import RankedResults, Result
 from rerankers.utils import (
     vprint,
@@ -89,7 +87,7 @@ class T5Ranker(BaseRanker):
         token_false: str = "auto",
         token_true: str = "auto",
         return_logits: bool = False,
-        inputs_template: str = "Query: {query} Document: {text} Relevant:"
+        inputs_template: str = "Query: {query} Document: {text} Relevant:",
     ):
         """
         Implementation of the key functions from https://github.com/unicamp-dl/InRanker/blob/main/inranker/rankers.py
@@ -197,8 +195,7 @@ class T5Ranker(BaseRanker):
             total=ceil(len(docs) / batch_size),
         ):
             queries_documents = [
-                self.inputs_template.format(query=query, text=text)
-                for text in batch
+                self.inputs_template.format(query=query, text=text) for text in batch
             ]
             tokenized = self.tokenizer(
                 queries_documents,
