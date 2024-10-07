@@ -1,7 +1,7 @@
 
 # rerankers
 
-![Python Versions](https://img.shields.io/badge/Python-3.8_3.9_3.10_3.11-blue)
+![Python Versions](https://img.shields.io/badge/Python-3.9_3.10_3.11_3.12-blue)
 [![Downloads](https://static.pepy.tech/badge/rerankers/month)](https://pepy.tech/project/rerankers)
 [![Twitter Follow](https://img.shields.io/twitter/follow/bclavie?style=social)](https://twitter.com/bclavie)
 

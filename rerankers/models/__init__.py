@@ -1,4 +1,6 @@
-AVAILABLE_RANKERS = {}
+from typing import Any
+
+AVAILABLE_RANKERS: dict[str, Any] = {}
 
 try:
     from rerankers.models.transformer_ranker import TransformerRanker

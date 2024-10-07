@@ -3,7 +3,7 @@ Modifications include packaging into a BaseRanker, dynamic query/doc length and 
 
 import torch
 import torch.nn as nn
-from transformers import BertPreTrainedModel, BertModel, AutoModel, AutoTokenizer
+from transformers import BertPreTrainedModel, BertModel, AutoTokenizer
 from typing import List, Optional, Union
 from math import ceil
 
