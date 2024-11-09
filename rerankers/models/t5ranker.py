@@ -14,8 +14,6 @@ from rerankers.models.ranker import BaseRanker
 from rerankers.documents import Document
 
 
-import torch
-
 from rerankers.results import RankedResults, Result
 from rerankers.utils import (
     vprint,
@@ -89,7 +87,8 @@ class T5Ranker(BaseRanker):
         token_false: str = "auto",
         token_true: str = "auto",
         return_logits: bool = False,
-        inputs_template: str = "Query: {query} Document: {text} Relevant:"
+        inputs_template: str = "Query: {query} Document: {text} Relevant:",
+        **kwargs,
     ):
         """
         Implementation of the key functions from https://github.com/unicamp-dl/InRanker/blob/main/inranker/rankers.py
@@ -113,11 +112,18 @@ class T5Ranker(BaseRanker):
         )
         vprint(f"Using device {self.device}.", self.verbose)
         vprint(f"Using dtype {self.dtype}.", self.verbose)
+        model_kwargs = kwargs.get("model_kwargs", {})
         self.model = AutoModelForSeq2SeqLM.from_pretrained(
-            model_name_or_path, torch_dtype=self.dtype
+            model_name_or_path,
+            torch_dtype=self.dtype,
+            **model_kwargs,
         ).to(self.device)
         self.model.eval()
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
+        tokenizer_kwargs = kwargs.get("tokenizer_kwargs", {})
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_name_or_path,
+            **tokenizer_kwargs,
+        )
 
         token_false, token_true = _get_output_tokens(
             model_name_or_path=model_name_or_path,
