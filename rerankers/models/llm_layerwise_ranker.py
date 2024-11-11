@@ -126,7 +126,7 @@ class LLMLayerWiseRanker(BaseRanker):
             return_tensors="pt",
         )
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def rank(
         self,
         query: str,
@@ -177,7 +177,7 @@ class LLMLayerWiseRanker(BaseRanker):
         ]
         return RankedResults(results=ranked_results, query=query, has_scores=True)
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def score(self, query: str, doc: str) -> float:
         inputs = self._get_inputs(
             [(query, doc)], max_sequence_length=self.max_sequence_length

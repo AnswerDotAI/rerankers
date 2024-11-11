@@ -166,7 +166,7 @@ class T5Ranker(BaseRanker):
         scores = self._get_scores(query, [doc])
         return scores[0] if scores else 0.0
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def _get_scores(
         self,
         query: str,
@@ -231,7 +231,7 @@ class T5Ranker(BaseRanker):
             return logits
         return scores
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def _greedy_decode(
         self,
         model,

@@ -186,7 +186,7 @@ class ColBERTModel(BertPreTrainedModel):
         return self._encode(documents, self.document_token_id)
 
     def _to_embs(self, encoding) -> torch.Tensor:
-        with torch.no_grad():
+        with torch.inference_mode():
             # embs = self.model(**encoding).last_hidden_state.squeeze(1)
             embs = self.model(**encoding)
         if self.normalize:
@@ -271,7 +271,7 @@ class ColBERTRanker(BaseRanker):
         scores = self._colbert_rank(query, [doc])
         return scores[0] if scores else 0.0
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def _colbert_rank(
         self,
         query: str,
@@ -377,7 +377,7 @@ class ColBERTRanker(BaseRanker):
         return encoding
 
     def _to_embs(self, encoding) -> torch.Tensor:
-        with torch.no_grad():
+        with torch.inference_mode():
             batched_embs = []
             for i in range(0, encoding["input_ids"].size(0), self.batch_size):
                 batch_encoding = {
