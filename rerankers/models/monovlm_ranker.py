@@ -68,11 +68,13 @@ class MonoVLMRanker(BaseRanker):
         processor_name = processor_name or "Qwen/Qwen2-VL-2B-Instruct"
         processor_kwargs = kwargs.get("processor_kwargs", {})
         model_kwargs = kwargs.get("model_kwargs", {})
+        attention_implementation = kwargs.get("attention_implementation", "flash_attention_2")
         self.processor = AutoProcessor.from_pretrained(processor_name, **processor_kwargs)
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
             model_name_or_path,
             device_map=self.device,
             torch_dtype=self.dtype,
+            attn_implementation=attention_implementation,
             **model_kwargs
         )
         self.model.eval()
@@ -96,9 +98,10 @@ class MonoVLMRanker(BaseRanker):
                 raise ValueError("MonoVLMRanker requires image documents with base64 data")
             
             # Convert base64 to PIL Image
-            image_bytes = base64.b64decode(doc.base64)
-            image = Image.open(io.BytesIO(image_bytes))
-            
+            image_io = io.BytesIO(base64.b64decode(doc.base64))
+            image_io.seek(0)  # Reset file pointer to start
+            image = Image.open(image_io).convert('RGB')
+
             # Prepare prompt
             prompt = self.prompt_template.format(query=query)
             messages = [
@@ -121,7 +124,7 @@ class MonoVLMRanker(BaseRanker):
                 text=text, 
                 images=image, 
                 return_tensors="pt"
-            ).to(self.device)
+            ).to(self.device).to(self.dtype)
 
             # Get model outputs
             outputs = self.model(**inputs)

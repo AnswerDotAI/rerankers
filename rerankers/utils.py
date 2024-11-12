@@ -1,6 +1,11 @@
 import base64
 import binascii
 from typing import Union, Optional, List, Iterable
+try:
+    import io
+    from PIL import Image
+except ImportError:
+    pass
 from rerankers.documents import Document
 
 def vprint(txt: str, verbose: int) -> None:
@@ -144,23 +149,27 @@ def prep_image_docs(
     for doc in docs:
         # Check if input is base64 by attempting to decode
         try:
-            # Try to decode - if it works, it's base64
-            base64.b64decode(doc)
-            base64_str = doc
-            image_path = None
+            # Try to decode and verify it's an image
+            decoded = base64.b64decode(doc)
+            try:
+                Image.open(io.BytesIO(decoded)).verify()
+                b64 = doc
+                image_path = None
+            except:
+                raise binascii.Error("Invalid image data")
         except binascii.Error:
             # If decode fails, treat as file path
             try:
-                with open(doc, "rb") as image_file:
-                    base64_str = base64.b64encode(image_file.read()).decode()
-                    image_path = doc
+                image_path = doc
+                with open(doc, 'rb') as img_file:
+                    b64 = base64.b64encode(img_file.read()).decode('utf-8')
             except Exception as e:
                 raise ValueError(f"Could not process image input {doc}: {str(e)}")
         
         processed_docs.append(
             Document(
                 document_type="image",
-                base64=base64_str,
+                base64=b64,
                 image_path=image_path
             )
         )
@@ -175,6 +184,7 @@ def prep_image_docs(
     for i, doc in enumerate(processed_docs):
         doc.doc_id = doc_ids[i]
         doc.metadata = metadata[i]
+
 
     return processed_docs
 
