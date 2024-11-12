@@ -63,6 +63,10 @@ pip install "rerankers[flashrank]"
 # Note: RankLLM is only supported on Python 3.10+! This will not work with Python 3.9
 pip install "rerankers[rankllm]"
 
+# To support Multi-Modal rerankers such as MonoQwen2-VL and other MonoVLM models, which require flash-attention, peft, accelerate, and recent versions of `transformers`
+pip install "rerankers[monovlm]"
+
+
 # To support LLM-Layerwise rerankers (which need flash-attention installed)
 pip install "rerankers[llmlayerwise]"
 
