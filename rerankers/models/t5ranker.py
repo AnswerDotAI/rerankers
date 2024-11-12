@@ -255,14 +255,26 @@ class T5Ranker(BaseRanker):
         encoder_outputs = model.get_encoder()(input_ids, attention_mask=attention_mask)
         next_token_logits = None
         for _ in range(length):
-            model_inputs = model.prepare_inputs_for_generation(
-                decode_ids,
-                encoder_outputs=encoder_outputs,
-                past=None,
-                attention_mask=attention_mask,
-                use_cache=True,
-            )
-            outputs = model(**model_inputs)  # (batch_size, cur_len, vocab_size)
+            try:
+                model_inputs = model.prepare_inputs_for_generation(
+                    decode_ids,
+                    encoder_outputs=encoder_outputs,
+                    past=None,
+                    attention_mask=attention_mask,
+                    use_cache=True,
+                )
+                outputs = model(**model_inputs)
+            except TypeError:
+                # Newer transformers versions have deprecated `past`
+                # Our aim is to maintain pipeline compatibility for as many people as possible
+                # So currently, we maintain a forking path with this error. Might need to do it more elegantly later on (TODO).
+                model_inputs = model.prepare_inputs_for_generation(
+                    decode_ids,
+                    encoder_outputs=encoder_outputs,
+                    attention_mask=attention_mask,
+                    use_cache=True,
+                )
+                outputs = model(**model_inputs)  # (batch_size, cur_len, vocab_size)
             next_token_logits = outputs[0][:, -1, :]  # (batch_size, vocab_size)
             decode_ids = torch.cat(
                 [decode_ids, next_token_logits.max(1)[1].unsqueeze(-1)], dim=-1
