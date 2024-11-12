@@ -25,18 +25,26 @@ class TransformerRanker(BaseRanker):
         device: Optional[Union[str, torch.device]] = None,
         batch_size: int = 16,
         verbose: int = 1,
+        **kwargs,
     ):
         self.verbose = verbose
         self.device = get_device(device, verbose=self.verbose)
         self.dtype = get_dtype(dtype, self.device, self.verbose)
+        model_kwargs = kwargs.get("model_kwargs", {})
         self.model = AutoModelForSequenceClassification.from_pretrained(
-            model_name_or_path, torch_dtype=self.dtype
+            model_name_or_path,
+            torch_dtype=self.dtype,
+            **model_kwargs,
         ).to(self.device)
         vprint(f"Loaded model {model_name_or_path}", self.verbose)
         vprint(f"Using device {self.device}.", self.verbose)
         vprint(f"Using dtype {self.dtype}.", self.verbose)
         self.model.eval()
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
+        tokenizer_kwargs = kwargs.get("tokenizer_kwargs", {})
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_name_or_path,
+            **tokenizer_kwargs,
+        )
         self.ranking_type = "pointwise"
         self.batch_size = batch_size
 

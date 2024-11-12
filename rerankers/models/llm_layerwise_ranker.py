@@ -38,6 +38,7 @@ class LLMLayerWiseRanker(BaseRanker):
         cutoff_layers: Optional[List[int]] = None,
         compress_ratio: Optional[int] = None,
         compress_layer: Optional[List[int]] = None,
+        **kwargs,
     ):
         self.verbose = verbose
         self.device = get_device(device, verbose=self.verbose)
@@ -50,16 +51,24 @@ class LLMLayerWiseRanker(BaseRanker):
         )
         vprint(f"Using device {self.device}.", self.verbose)
         vprint(f"Using dtype {self.dtype}.", self.verbose)
-
+        tokenizer_kwargs = kwargs.get("tokenizer_kwargs", {})
+        tokenizer_trust_remote_code = tokenizer_kwargs.pop("trust_remote_code", True)
         self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name_or_path, trust_remote_code=True
+            model_name_or_path,
+            trust_remote_code=tokenizer_trust_remote_code,
+            **tokenizer_kwargs,
         )
         self.max_sequence_length = max_sequence_length
         self.tokenizer.model_max_length = self.max_sequence_length
         self.tokenizer.padding_side = "right"
+        model_kwargs = kwargs.get("model_kwargs", {})
+        model_trust_remote_code = model_kwargs.pop("trust_remote_code", True)
 
         self.model = AutoModelForCausalLM.from_pretrained(
-            model_name_or_path, trust_remote_code=True, torch_dtype=self.dtype
+            model_name_or_path,
+            trust_remote_code=model_trust_remote_code,
+            torch_dtype=self.dtype,
+            **model_kwargs,
         ).to(self.device)
         self.model.eval()
 

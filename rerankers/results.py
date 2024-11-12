@@ -1,4 +1,5 @@
-from typing import Union, Optional, List
+from typing import List, Optional, Union
+
 from pydantic import BaseModel, validator
 
 from rerankers.documents import Document

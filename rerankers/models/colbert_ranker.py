@@ -221,6 +221,7 @@ class ColBERTRanker(BaseRanker):
         verbose: int = 1,
         query_token: str = "[unused0]",
         document_token: str = "[unused1]",
+        **kwargs,
     ):
         self.verbose = verbose
         self.device = get_device(device, self.verbose)
@@ -230,10 +231,13 @@ class ColBERTRanker(BaseRanker):
             f"Loading model {model_name}, this might take a while...",
             self.verbose,
         )
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        tokenizer_kwargs = kwargs.get("tokenizer_kwargs", {})
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, **tokenizer_kwargs)
+        model_kwargs = kwargs.get("model_kwargs", {})
         self.model = (
             ColBERTModel.from_pretrained(
                 model_name,
+                **model_kwargs
             )
             .to(self.device)
             .to(self.dtype)
