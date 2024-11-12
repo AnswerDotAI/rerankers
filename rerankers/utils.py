@@ -18,13 +18,13 @@ try:
     ) -> torch.dtype:
         if dtype is None:
             vprint("No dtype set", verbose)
-        if device == "cpu":
-            vprint("Device set to `cpu`, setting dtype to `float32`", verbose)
-            dtype = torch.float32
+        # if device == "cpu":
+        #     vprint("Device set to `cpu`, setting dtype to `float32`", verbose)
+        #     dtype = torch.float32
         if not isinstance(dtype, torch.dtype):
-            if dtype == "fp16" or "float16":
+            if dtype == "fp16" or dtype == "float16":
                 dtype = torch.float16
-            elif dtype == "bf16" or "bfloat16":
+            elif dtype == "bf16" or dtype == "bfloat16":
                 dtype = torch.bfloat16
             else:
                 dtype = torch.float32

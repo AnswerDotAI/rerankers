@@ -38,19 +38,24 @@ def _get_output_tokens(model_name_or_path, token_false: str, token_true: str):
 class MonoVLMRanker(BaseRanker):
     def __init__(
         self,
-        model_name_or_path: str = "lightonai/MonoQwen2-VL-v0.1",
+        model_name_or_path: str,
         processor_name: Optional[str] = None,
-        dtype: Optional[Union[str, torch.dtype]] = None,
+        dtype: Optional[Union[str, torch.dtype]] = 'bf16',
         device: Optional[Union[str, torch.device]] = None,
         batch_size: int = 1,
         verbose: int = 1,
         token_false: str = "auto",
         token_true: str = "auto",
         return_logits: bool = False,
-        prompt_template: str = "Assert the relevance of the previous image document to the following query, answer True or False. The query is: {query}"
+        prompt_template: str = "Assert the relevance of the previous image document to the following query, answer True or False. The query is: {query}",
+        **kwargs
     ):
         self.verbose = verbose
         self.device = get_device(device, verbose=self.verbose)
+        if self.device == 'mps':
+            print("WARNING: MPS is not supported by MonoVLMRanker due to PyTorch limitations. Falling back to CPU.")
+            self.device = 'cpu'
+        print(dtype)
         self.dtype = get_dtype(dtype, self.device, self.verbose)
         self.batch_size = batch_size
         self.return_logits = return_logits
@@ -61,11 +66,14 @@ class MonoVLMRanker(BaseRanker):
         vprint(f"Using dtype {self.dtype}.", self.verbose)
 
         processor_name = processor_name or "Qwen/Qwen2-VL-2B-Instruct"
-        self.processor = AutoProcessor.from_pretrained(processor_name)
+        processor_kwargs = kwargs.get("processor_kwargs", {})
+        model_kwargs = kwargs.get("model_kwargs", {})
+        self.processor = AutoProcessor.from_pretrained(processor_name, **processor_kwargs)
         self.model = Qwen2VLForConditionalGeneration.from_pretrained(
             model_name_or_path,
             device_map=self.device,
-            torch_dtype=self.dtype
+            torch_dtype=self.dtype,
+            **model_kwargs
         )
         self.model.eval()
 

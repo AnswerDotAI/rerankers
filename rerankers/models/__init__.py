@@ -52,3 +52,10 @@ try:
     AVAILABLE_RANKERS["LLMLayerWiseRanker"] = LLMLayerWiseRanker
 except ImportError:
     pass
+
+# try:
+from rerankers.models.monovlm_ranker import MonoVLMRanker
+
+AVAILABLE_RANKERS["MonoVLMRanker"] = MonoVLMRanker
+# except ImportError:
+#     pass
