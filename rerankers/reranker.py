@@ -198,7 +198,7 @@ def Reranker(
     model_type = _get_model_type(model_name, model_type)
 
     try:
-        print(f"Loading {model_type} model {model_name}")
+        vprint(f"Loading {model_type} model {model_name} (this message can be suppressed by setting verbose=0)", verbose)
         return AVAILABLE_RANKERS[model_type](model_name, verbose=verbose, **kwargs)
     except KeyError:
         print(
