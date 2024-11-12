@@ -45,7 +45,7 @@ class TransformerRanker(BaseRanker):
             inputs, return_tensors="pt", padding=True, truncation=True
         ).to(self.device)
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def rank(
         self,
         query: str,
@@ -83,7 +83,7 @@ class TransformerRanker(BaseRanker):
             ]
             return RankedResults(results=ranked_results, query=query, has_scores=True)
 
-    @torch.no_grad()
+    @torch.inference_mode()
     def score(self, query: str, doc: str) -> float:
         inputs = self.tokenize((query, doc))
         outputs = self.model(**inputs)

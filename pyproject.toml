@@ -14,7 +14,7 @@ packages = [
 name = "rerankers" 
 
 
-version = "0.5.3"
+version = "0.6.0"
 
 description = "A unified API for various document re-ranking models."
 
@@ -53,7 +53,7 @@ dependencies = [
 
 [project.optional-dependencies]
 all = [
-    "transformers",
+    "transformers>=4.45.0",
     "torch",
     "litellm",
     "requests",
@@ -61,14 +61,18 @@ all = [
     "protobuf",
     "flashrank",
     "flash-attn",
+    "pillow",
+    "accelerate>=0.26.0",
+    "peft>=0.13.0",
     "nmslib-metabrainz; python_version >= '3.10'",
     "rank-llm; python_version >= '3.10'"
 ]
-transformers = ["transformers", "torch", "sentencepiece", "protobuf"]
+transformers = ["transformers>=4.45.0", "torch", "sentencepiece", "protobuf"]
 api = ["requests"]
 gpt = ["litellm"]
 flashrank = ["flashrank"]
-llmlayerwise = ["transformers", "torch", "sentencepiece", "protobuf", "flash-attn"]
+llmlayerwise = ["transformers>=4.45.0", "torch", "sentencepiece", "protobuf", "flash-attn"]
+monovlm = ["transformers>=4.45.0", "torch", "sentencepiece", "protobuf", "flash-attn", "pillow", "accelerate>=0.26.0", "peft>=0.13.0"]
 rankllm = [
   "nmslib-metabrainz; python_version >= '3.10'",
   "rank-llm; python_version >= '3.10'"

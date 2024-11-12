@@ -1,6 +1,12 @@
+import base64
+import binascii
 from typing import Union, Optional, List, Iterable
+try:
+    import io
+    from PIL import Image
+except ImportError:
+    pass
 from rerankers.documents import Document
-
 
 def vprint(txt: str, verbose: int) -> None:
     if verbose > 0:
@@ -17,13 +23,13 @@ try:
     ) -> torch.dtype:
         if dtype is None:
             vprint("No dtype set", verbose)
-        if device == "cpu":
-            vprint("Device set to `cpu`, setting dtype to `float32`", verbose)
-            dtype = torch.float32
+        # if device == "cpu":
+        #     vprint("Device set to `cpu`, setting dtype to `float32`", verbose)
+        #     dtype = torch.float32
         if not isinstance(dtype, torch.dtype):
-            if dtype == "fp16" or "float16":
+            if dtype == "fp16" or dtype == "float16":
                 dtype = torch.float16
-            elif dtype == "bf16" or "bfloat16":
+            elif dtype == "bf16" or dtype == "bfloat16":
                 dtype = torch.bfloat16
             else:
                 dtype = torch.float32
@@ -47,7 +53,7 @@ try:
         return device
 
 except ImportError:
-    print("Torch not installed...")
+    pass
 
 
 def make_documents(
@@ -107,10 +113,82 @@ def prep_docs(
         doc_ids = list(range(len(docs)))
     if metadata is None:
         metadata = [{} for _ in docs]
+
     return [
         Document(doc, doc_id=doc_ids[i], metadata=metadata[i])
         for i, doc in enumerate(docs)
     ]
+
+
+def prep_image_docs(
+    docs: Union[str, List[str], Document, List[Document]],
+    doc_ids: Optional[Union[List[str], List[int]]] = None,
+    metadata: Optional[List[dict]] = None,
+) -> List[Document]:
+    """
+    Prepare image documents for processing. Can handle base64 encoded images or file paths.
+    Similar to prep_docs but specialized for image documents.
+    """
+    # If already Document objects, handle similarly to prep_docs
+    if isinstance(docs, Document) or (
+        isinstance(docs, List) and isinstance(docs[0], Document)
+    ):
+        if isinstance(docs, Document):
+            docs = [docs]
+        # Validate all docs are image type
+        for doc in docs:
+            if doc.document_type != "image":
+                raise ValueError("All documents must be of type 'image'")
+        return prep_docs(docs, doc_ids, metadata)
+
+    # Handle string inputs (paths or base64)
+    if isinstance(docs, str):
+        docs = [docs]
+
+    processed_docs = []
+    for doc in docs:
+        # Check if input is base64 by attempting to decode
+        try:
+            # Try to decode and verify it's an image
+            decoded = base64.b64decode(doc)
+            try:
+                Image.open(io.BytesIO(decoded)).verify()
+                b64 = doc
+                image_path = None
+            except:
+                raise binascii.Error("Invalid image data")
+        except binascii.Error:
+            # If decode fails, treat as file path
+            try:
+                image_path = doc
+                with open(doc, 'rb') as img_file:
+                    b64 = base64.b64encode(img_file.read()).decode('utf-8')
+            except Exception as e:
+                raise ValueError(f"Could not process image input {doc}: {str(e)}")
+        
+        processed_docs.append(
+            Document(
+                document_type="image",
+                base64=b64,
+                image_path=image_path
+            )
+        )
+
+    # Handle doc_ids and metadata
+    if doc_ids is None:
+        doc_ids = list(range(len(processed_docs)))
+    if metadata is None:
+        metadata = [{} for _ in processed_docs]
+
+    # Set doc_ids and metadata
+    for i, doc in enumerate(processed_docs):
+        doc.doc_id = doc_ids[i]
+        doc.metadata = metadata[i]
+
+
+    return processed_docs
+
+
 
 
 def get_chunks(iterable: Iterable, chunk_size: int):  # noqa: E741

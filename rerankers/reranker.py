@@ -35,6 +35,10 @@ DEFAULTS = {
         "en": "BAAI/bge-reranker-v2.5-gemma2-lightweight",
         "other": "BAAI/bge-reranker-v2.5-gemma2-lightweight",
     },
+    "monovlm": {
+        "en": "lightonai/MonoQwen2-VL-v0.1",
+        "other": "lightonai/MonoQwen2-VL-v0.1"
+    }
 }
 
 DEPS_MAPPING = {
@@ -47,6 +51,7 @@ DEPS_MAPPING = {
     "FlashRankRanker": "flashrank",
     "RankLLMRanker": "rankllm",
     "LLMLayerWiseRanker": "transformers",
+    "MonoVLMRanker": "transformers"
 }
 
 PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "text-embeddings-inference"]
@@ -84,6 +89,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "flashrank": "FlashRankRanker",
             "rankllm": "RankLLMRanker",
             "llm-layerwise": "LLMLayerWiseRanker",
+            "monovlm": "MonoVLMRanker"
         }
         return model_mapping.get(explicit_model_type, explicit_model_type)
     else:
@@ -105,6 +111,8 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "vicuna": "RankLLMRanker",
             "zephyr": "RankLLMRanker",
             "bge-reranker-v2.5-gemma2-lightweight": "LLMLayerWiseRanker",
+            "monovlm": "MonoVLMRanker",
+            "monoqwen2-vl": "MonoVLMRanker"
         }
         for key, value in model_mapping.items():
             if key in model_name:
@@ -198,7 +206,7 @@ def Reranker(
     model_type = _get_model_type(model_name, model_type)
 
     try:
-        print(f"Loading {model_type} model {model_name}")
+        vprint(f"Loading {model_type} model {model_name} (this message can be suppressed by setting verbose=0)", verbose)
         return AVAILABLE_RANKERS[model_type](model_name, verbose=verbose, **kwargs)
     except KeyError:
         print(
