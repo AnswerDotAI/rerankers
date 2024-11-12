@@ -45,12 +45,13 @@ class FlashRankRanker(BaseRanker):
 
         ranked_results = [
             Result(
-                document=docs[idx],
+                document=docs[result["id"]],  # Returns reranked documents.
                 score=result["score"],
                 rank=idx + 1,
             )
             for idx, result in enumerate(flashrank_results)
         ]
+        
         return RankedResults(results=ranked_results, query=query, has_scores=True)
 
     def score(self, query: str, doc: str) -> float:
