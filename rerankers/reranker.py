@@ -6,6 +6,7 @@ from rerankers.utils import vprint
 
 DEFAULTS = {
     "jina": {"en": "jina-reranker-v1-base-en"},
+    "pinecone": {"en": "pinecone-rerank-v0"},
     "cohere": {"en": "rerank-english-v3.0", "other": "rerank-multilingual-v3.0"},
     "voyage": {"en": "rerank-lite-1"},
     "mixedbread.ai": {"en": "mixedbread-ai/mxbai-rerank-large-v1"},
@@ -54,7 +55,7 @@ DEPS_MAPPING = {
     "MonoVLMRanker": "transformers"
 }
 
-PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "text-embeddings-inference"]
+PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "pinecone", "text-embeddings-inference"]
 
 
 def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> str:
@@ -78,6 +79,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
     if explicit_model_type:
         model_mapping = {
             "cohere": "APIRanker",
+            "pinecone": "APIRanker",
             "jina": "APIRanker",
             "voyage": "APIRanker",
             "text-embeddings-inference": "APIRanker",
@@ -103,6 +105,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "gpt": "RankGPTRanker",
             "colbert": "ColBERTRanker",
             "cohere": "APIRanker",
+            "pinecone": "APIRanker",
             "jina": "APIRanker",
             "voyage": "APIRanker",
             "text-embeddings-inference": "APIRanker",
