@@ -3,6 +3,7 @@ from rerankers.models.ranker import BaseRanker
 from rerankers.results import RankedResults, Result
 from rerankers.utils import prep_docs
 from rerankers.documents import Document
+from string import Template
 
 
 import requests
@@ -14,6 +15,17 @@ URLS = {
     "jina": "https://api.jina.ai/v1/rerank",
     "voyage": "https://api.voyageai.com/v1/rerank",
     "mixedbread.ai": "https://api.mixedbread.ai/v1/reranking",
+    "pinecone": "https://api.pinecone.io/rerank",
+}
+AUTHORIZATION_KEY_MAPPING = {
+    "pinecone": "Api-Key"
+}
+API_VERSION_MAPPING = {
+    "pinecone": {"X-Pinecone-API-Version": "2024-10"}
+}
+
+API_KEY_MAPPING = {
+    "pinecone": Template("$api_key")
 }
 
 DOCUMENT_KEY_MAPPING = {
@@ -27,25 +39,31 @@ RETURN_DOCUMENTS_KEY_MAPPING = {
 RESULTS_KEY_MAPPING = {
     "voyage": "data",
     "mixedbread.ai": "data",
+    "pinecone": "data",
     "text-embeddings-inference": None
 }
 SCORE_KEY_MAPPING = {
     "mixedbread.ai": "score",
+    "pinecone": "score",
     "text-embeddings-inference":"score"
 }
 
 class APIRanker(BaseRanker):
     def __init__(self, model: str, api_key: str, api_provider: str, verbose: int = 1, url: str = None):
-        self.api_key = api_key
-        self.model = model
         self.api_provider = api_provider.lower()
+        self.api_key = API_KEY_MAPPING.get(self.api_provider,Template("Bearer $api_key")).substitute(api_key=api_key)
+        authorization_key = AUTHORIZATION_KEY_MAPPING.get(self.api_provider,"Authorization")
+        api_version = API_VERSION_MAPPING.get(self.api_provider,None)
+        self.model = model
         self.verbose = verbose
         self.ranking_type = "pointwise"
         self.headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
+            authorization_key: self.api_key,
         }
+        if api_version:
+            self.headers.update(api_version)
         self.url = url if url else URLS[self.api_provider]
 
 
@@ -68,7 +86,6 @@ class APIRanker(BaseRanker):
     ) -> RankedResults:
         ranked_docs = []
         results_key = RESULTS_KEY_MAPPING.get(self.api_provider,"results")
-        print(response)
 
         for i, r in enumerate(response[results_key] if results_key else response):
             ranked_docs.append(
@@ -103,10 +120,14 @@ class APIRanker(BaseRanker):
         documents_key = DOCUMENT_KEY_MAPPING.get(self.api_provider,"documents")
         return_documents_key = RETURN_DOCUMENTS_KEY_MAPPING.get(self.api_provider,"return_documents")
 
+        documents = (
+            [d.text for d in docs] if self.api_provider not in ["pinecone"] else [{"text": d.text} for d in docs]
+        ) 
+        
         payload = {
             "model": self.model,
             "query": query,
-            documents_key: [d.text for d in docs],
+            documents_key: documents,
             top_key: len(docs),
             return_documents_key: True,
         }
