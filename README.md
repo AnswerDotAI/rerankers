@@ -15,10 +15,10 @@ Welcome to `rerankers`! Our goal is to provide users with a simple API to use an
 ## Recent Updates
 _A longer release history can be found in the [Release History](#release-history) section of this README._
 
-- 🆕 v0.6.1: Added support for Pinecone's new rerankers via their API.
-- 🆕 v0.6.0: `rerankers` goes multi-modal, with the support of the first MonoVLMRanker model, [MonoQwen2-VL-v0.1!](https://huggingface.co/lightonai/MonoQwen2-VL-v0.1)! + Many QoL fixes.
-- v0.5.2: Minor ColBERT fixes
-- v0.5.1: Minor change making RankedResults subscribable, meaning results[0] will return the result for the first document, etc... ⚠️ This is sorted by **passed document order**, not by results, you should use `.top_k()` to get sorted results!
+- v0.7.0: Removing `pydantic` and `tqdm` dependencies, so `rerankers` is now dependency-free by default, avoiding any issues with Pydantic v1/v2!
+- v0.6.1: Added support for Pinecone's new rerankers via their API.
+- v0.6.0: `rerankers` goes multi-modal, with the support of the first MonoVLMRanker model, [MonoQwen2-VL-v0.1!](https://huggingface.co/lightonai/MonoQwen2-VL-v0.1)! + Many QoL fixes.
+- v0.5.*: ColBERT fixes (0.5.1) & Minor change making RankedResults subscribable, meaning results[0] will return the result for the first document (0.5.2), etc... ⚠️ This is sorted by **passed document order**, not by results, you should use `.top_k()` to get sorted results!
 - v0.5.0: Added support for the current state-of-the-art rerankers, BAAI's series of `BGE` layerwise LLM rerankers, based on [Gemma](https://huggingface.co/BAAI/bge-reranker-v2.5-gemma2-lightweight) and MiniCPM. These are different from RankGPT, as they're not listwise: the models are repurposed as "cross-encoders", and do output logit scores.
 
 ## Why `rerankers`?
