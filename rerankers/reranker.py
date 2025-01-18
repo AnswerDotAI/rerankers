@@ -38,8 +38,12 @@ DEFAULTS = {
     },
     "monovlm": {
         "en": "lightonai/MonoQwen2-VL-v0.1",
-        "other": "lightonai/MonoQwen2-VL-v0.1"
-    }
+        "other": "lightonai/MonoQwen2-VL-v0.1",
+    },
+    "fastembed": {
+        "en": "Xenova/ms-marco-MiniLM-L-6-v2",
+        "other": "Xenova/ms-marco-MiniLM-L-6-v2",
+    },
 }
 
 DEPS_MAPPING = {
@@ -52,7 +56,8 @@ DEPS_MAPPING = {
     "FlashRankRanker": "flashrank",
     "RankLLMRanker": "rankllm",
     "LLMLayerWiseRanker": "transformers",
-    "MonoVLMRanker": "transformers"
+    "MonoVLMRanker": "transformers",
+    "FastEmbedRanker": "fastembed",
 }
 
 PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "pinecone", "text-embeddings-inference"]
@@ -91,7 +96,8 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "flashrank": "FlashRankRanker",
             "rankllm": "RankLLMRanker",
             "llm-layerwise": "LLMLayerWiseRanker",
-            "monovlm": "MonoVLMRanker"
+            "monovlm": "MonoVLMRanker",
+            "fastembed": "FastEmbedRanker",
         }
         return model_mapping.get(explicit_model_type, explicit_model_type)
     else:
@@ -115,7 +121,8 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "zephyr": "RankLLMRanker",
             "bge-reranker-v2.5-gemma2-lightweight": "LLMLayerWiseRanker",
             "monovlm": "MonoVLMRanker",
-            "monoqwen2-vl": "MonoVLMRanker"
+            "monoqwen2-vl": "MonoVLMRanker",
+            "Xenova/ms-marco-MiniLM-L-6-v2": "FastEmbedRanker",
         }
         for key, value in model_mapping.items():
             if key in model_name:
