@@ -42,7 +42,7 @@ All the different reranking approaches tend to be done in their own library, wit
 
 ## Get Started
 
-Installation is very simple. The core package ships with just two dependencies, `tqdm` and `pydantic`, so as to avoid any conflict with your current environment.
+Installation is very simple. The core package ships with no dependencies, so as to avoid any conflict with your current environment.
 You may then install only the dependencies required by the models you want to try out:
 
 ```sh
@@ -177,7 +177,7 @@ You can also use `rank_async`, which is essentially just a wrapper to turn `rank
 RankedResults(results=[Result(document=Document(text='I really like you', doc_id=1, metadata={'source': 'twitter'}), score=-2.453125, rank=1), Result(document=Document(text='I hate you', doc_id=0, metadata={'source': 'reddit'}), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
 ```
 
-All rerankers will return a `RankedResults` object, which is a pydantic object containing a list of `Result` objects and some other useful information, such as the original query. You can retrieve the top `k` results from it by running `top_k()`:
+All rerankers will return a `RankedResults` object, which is a Python object containing a list of `Result` objects and some other useful information, such as the original query. You can retrieve the top `k` results from it by running `top_k()`:
 
 ```python
 > results.top_k(1)
