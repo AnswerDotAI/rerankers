@@ -11,6 +11,7 @@ class Document:
         image_path: Optional[str] = None,
         base64: Optional[str] = None,
     ):
+        self.attributes = ["text", "base64", "image_path", "doc_id", "metadata"]
         self.document_type = document_type
         self.text = text
         self.base64 = base64

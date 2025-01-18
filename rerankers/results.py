@@ -17,6 +17,8 @@ class Result:
             return getattr(self.document, item)
         elif item in ["document", "score", "rank"]:
             return getattr(self, item)
+        elif item in self.document.attributes:
+            return getattr(self.document, item)
         elif item in self.document.metadata:
             return self.document.metadata[item]
         raise AttributeError(
