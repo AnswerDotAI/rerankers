@@ -1,25 +1,21 @@
 from typing import List, Optional, Union
 
-from pydantic import BaseModel, validator
-
 from rerankers.documents import Document
 
 
-class Result(BaseModel):
-    document: Document
-    score: Optional[float] = None
-    rank: Optional[int] = None
-
-    @validator("rank", always=True)
-    def check_score_or_rank_exists(cls, v, values):
-        if v is None and values.get("score") is None:
+class Result:
+    def __init__(self, document: Document, score: Optional[float] = None, rank: Optional[int] = None):
+        self.document = document
+        self.score = score
+        self.rank = rank
+        
+        if rank is None and score is None:
             raise ValueError("Either score or rank must be provided.")
-        return v
 
     def __getattr__(self, item):
-        if item in self.document.model_fields:
+        if hasattr(self.document, item):
             return getattr(self.document, item)
-        elif item in self.model_fields:
+        elif item in ["document", "score", "rank"]:
             return getattr(self, item)
         elif item in self.document.metadata:
             return self.document.metadata[item]
@@ -28,10 +24,11 @@ class Result(BaseModel):
         )
 
 
-class RankedResults(BaseModel):
-    results: List[Result]
-    query: str
-    has_scores: bool = False
+class RankedResults:
+    def __init__(self, results: List[Result], query: str, has_scores: bool = False):
+        self.results = results
+        self.query = query
+        self.has_scores = has_scores
 
     def __iter__(self):
         """Allows iteration over the results list."""
@@ -64,7 +61,7 @@ class RankedResults(BaseModel):
         result = next((r for r in self.results if r.document.doc_id == doc_id), None)
         return result.score if result else None
 
-    def get_result_by_docid(self, doc_id: [Union[int, str]]) -> Result:
+    def get_result_by_docid(self, doc_id: Union[int, str]) -> Optional[Result]:
         """Fetches a result by its doc_id using a more efficient approach."""
         result = next((r for r in self.results if r.document.doc_id == doc_id), None)
         return result if result else None
