@@ -1,0 +1,161 @@
+# rerankers Module Documentation
+
+## rerankers.documents
+
+- `class Document`
+    - `@validator('text') def validate_text(cls, v, values)`
+    - `def __init__(self, text, doc_id, metadata, document_type, image_path, base64)`
+
+## rerankers.integrations.langchain
+
+- `class RerankerLangChainCompressor`
+    - `def compress_documents(self, documents, query, callbacks, **kwargs)`
+        Rerank a list of documents relevant to a query.
+
+
+## rerankers.models.api_rankers
+
+- `class APIRanker`
+    - `def __init__(self, model, api_key, api_provider, verbose, url)`
+    - `def rank(self, query, docs, doc_ids, metadata)`
+    - `def score(self, query, doc)`
+
+## rerankers.models.colbert_ranker
+
+> Code from HotchPotch's JQaRa repository: https://github.com/hotchpotch/JQaRA/blob/main/evaluator/reranker/colbert_reranker.py
+> Modifications include packaging into a BaseRanker, dynamic query/doc length and batch size handling.
+
+- `class ColBERTModel`
+    - `def __init__(self, config)`
+    - `def forward(self, input_ids, attention_mask, token_type_ids, position_ids, head_mask, inputs_embeds, encoder_hidden_states, encoder_attention_mask, output_attentions, output_hidden_states)`
+
+- `class ColBERTRanker`
+    - `def __init__(self, model_name, batch_size, dtype, device, verbose, query_token, document_token, **kwargs)`
+    - `def rank(self, query, docs, doc_ids, metadata)`
+    - `def score(self, query, doc)`
+
+## rerankers.models.flashrank_ranker
+
+- `class FlashRankRanker`
+    - `def __init__(self, model_name_or_path, verbose, cache_dir)`
+    - `def tokenize(self, inputs)`
+    - `def rank(self, query, docs, doc_ids, metadata)`
+    - `def score(self, query, doc)`
+
+## rerankers.models.llm_layerwise_ranker
+
+- `class LLMLayerWiseRanker`
+    - `def __init__(self, model_name_or_path, max_sequence_length, dtype, device, batch_size, verbose, prompt, cutoff_layers, compress_ratio, compress_layer, **kwargs)`
+    - `@torch.inference_mode() def rank(self, query, docs, doc_ids, metadata, batch_size, max_sequence_length)`
+    - `@torch.inference_mode() def score(self, query, doc)`
+
+## rerankers.models.monovlm_ranker
+
+- `class MonoVLMRanker`
+    - `def __init__(self, model_name_or_path, processor_name, dtype, device, batch_size, verbose, token_false, token_true, return_logits, prompt_template, **kwargs)`
+    - `def rank(self, query, docs, doc_ids, metadata)`
+    - `def score(self, query, doc)`
+
+## rerankers.models.ranker
+
+- `class BaseRanker`
+    - `@abstractmethod def __init__(self, model_name_or_path, verbose)`
+    - `@abstractmethod def score(self, query, doc)`
+    - `@abstractmethod def rank(self, query, docs, doc_ids)`
+        End-to-end reranking of documents.
+
+    - `def rank_async(self, query, docs, doc_ids)`
+    - `def as_langchain_compressor(self, k)`
+
+## rerankers.models.rankgpt_rankers
+
+> Full implementation is from the original RankGPT repository https://github.com/sunnweiwei/RankGPT under its Apache 2.0 License
+> 
+> Changes made are:
+> - Truncating the file to only the relevant functions
+> - Using only LiteLLM
+> - make_item() added
+> - Packaging it onto RankGPTRanker
+
+- `class RankGPTRanker`
+    - `def __init__(self, model, api_key, lang, verbose)`
+    - `def rank(self, query, docs, doc_ids, metadata, rank_start, rank_end)`
+    - `def score(self)`
+
+## rerankers.models.rankllm_ranker
+
+- `class RankLLMRanker`
+    - `def __init__(self, model, api_key, lang, verbose)`
+    - `def rank(self, query, docs, doc_ids, metadata, rank_start, rank_end)`
+    - `def score(self)`
+
+## rerankers.models.t5ranker
+
+> Code for InRanker is taken from the excellent InRanker repo https://github.com/unicamp-dl/InRanker under its Apache 2.0 license.
+> The only change to the original implementation is the removal of InRanker's BaseRanker, replacing it with our own to support the unified API better.
+> The main purpose for adapting this code here rather than installing the InRanker library is to ensure greater version compatibility (InRanker requires Python >=3.10)
+
+- `class T5Ranker`
+    - `def __init__(self, model_name_or_path, batch_size, dtype, device, verbose, token_false, token_true, return_logits, inputs_template, **kwargs)`
+        Implementation of the key functions from https://github.com/unicamp-dl/InRanker/blob/main/inranker/rankers.py
+        Changes are detailed in the docstring for each relevant function.
+
+        T5Ranker is a wrapper for using Seq2Seq models for ranking.
+        Args:
+            batch_size: The batch size to use when encoding.
+            dtype: Data type for model weights.
+            device: The device to use for inference ("cpu", "cuda", or "mps").
+            verbose: Verbosity level.
+            silent: Whether to show progress bars.
+
+    - `def rank(self, query, docs, doc_ids, metadata)`
+        Ranks a list of documents based on their relevance to the query.
+
+    - `def score(self, query, doc)`
+        Scores a single document's relevance to a query.
+
+
+## rerankers.models.transformer_ranker
+
+- `class TransformerRanker`
+    - `def __init__(self, model_name_or_path, dtype, device, batch_size, verbose, **kwargs)`
+    - `def tokenize(self, inputs)`
+    - `@torch.inference_mode() def rank(self, query, docs, doc_ids, metadata, batch_size)`
+    - `@torch.inference_mode() def score(self, query, doc)`
+
+## rerankers.results
+
+- `class Result`
+    - `@validator('rank', always=True) def check_score_or_rank_exists(cls, v, values)`
+    - `def __getattr__(self, item)`
+
+- `class RankedResults`
+    - `def __iter__(self)`
+        Allows iteration over the results list.
+
+    - `def __getitem__(self, index)`
+        Allows indexing to access results directly.
+
+    - `def results_count(self)`
+        Returns the total number of results.
+
+    - `def top_k(self, k)`
+        Returns the top k results based on the score, if available, or rank.
+
+    - `def get_score_by_docid(self, doc_id)`
+        Fetches the score of a result by its doc_id using a more efficient approach.
+
+    - `def get_result_by_docid(self, doc_id)`
+        Fetches a result by its doc_id using a more efficient approach.
+
+
+## rerankers.utils
+
+- `def prep_image_docs(docs, doc_ids, metadata)`
+    Prepare image documents for processing. Can handle base64 encoded images or file paths.
+    Similar to prep_docs but specialized for image documents.
+
+- `def get_chunks(iterable, chunk_size)`
+    Implementation from https://github.com/unicamp-dl/InRanker/blob/main/inranker/base.py with extra typing and more descriptive names.
+    This method is used to split a list l into chunks of batch size n.
+
