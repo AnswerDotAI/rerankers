@@ -1,0 +1,111 @@
+# Rerankers
+
+> Rerankers is a lightweight Python library providing a unified API for multiple document reranking models. It abstracts different model types (transformers, T5, API-based, etc.) behind a common interface for easy integration into information retrieval pipelines.
+
+## Key Features
+
++   Minimal core dependencies
++   Simple, unified API across model types
++   Type+safe document handling using pydantic
++   Extensible architecture
++   Support for async operations
+
+## Installation
+
+Installing the core package `rerankers` does not require any dependencies. This is so that you may use it with whatever libraries are already in your project without introducing conflicts.
+
+Installing the extras variants allows you to specify a model library as well as the rerankers core package itself. The `pyproject.toml` lists all possible extras and what they require. The README.md describes which models need them.
+
+```sh
+pip install rerankers  # Core package
+pip install "rerankers[transformers]"  # For transformer models
+pip install "rerankers[gpt]"           # For RankGPT
+pip install "rerankers[api]"  # For API-based models
+pip install "rerankers[all]"  # All features
+# etc..
+```
+
+## Docs
+
+- [README](https://raw.githubusercontent.com/AnswerDotAI/rerankers/refs/heads/main/README.md): Documentation
+
+## API
+
+- [API List](https://raw.githubusercontent.com/AnswerDotAI/rerankers/refs/heads/main/apilist.txt): A succinct list of all functions and methods
+
+## Basic Usage
+
+```python
+from rerankers import Reranker
+
+# Initialize a reranker
+ranker = Reranker('cross-encoder')  # or specific model name
+
+# Rank documents
+results = ranker.rank(
+    query="I love you",
+    docs=["I hate you", "I really like you"]
+)
+
+# Access results
+top_result = results.top_k(1)
+```
+
+## Supported Model Types
+
++   TransformerRanker: HuggingFace cross+encoders
++   APIRanker: External APIs (Cohere, Pinecone, etc.)
++   T5Ranker: Sequence+to+sequence models
++   ColBERTRanker: ColBERT architecture
++   FlashRankRanker: ONNX+optimized models
++   RankGPT/RankLLM variants
++   MonoVLMRanker: Multi+modal ranking
+
+## Core Components
+
++   Document: Stores text/image content with optional metadata
++   Result: Associates documents with scores
++   RankedResults: Collection of ranked results with helper functions
++   BaseRanker: Abstract base class for implementing new rankers
+
+## Extension Points
+
+To add a new ranker:
+
+1.  Extend BaseRanker class
+2.  Implement `rank()` and `score()` methods
+3.  Register in `AVAILABLE_RANKERS`
+4.  Add dependencies to setup.py extras
+
+## Integration Example
+
+```python
+# Using with API-based ranker
+ranker = Reranker("cohere", 
+                  lang='en',
+                  api_key="your_api_key")
+
+# Async support
+results = await ranker.rank_async(
+    query="Query",
+    docs=["Doc1", "Doc2"]
+)
+```
+
+## Troubleshooting
+
++   Install required extras for specific model types
++   Explicitly set `model_type` if auto+detection fails
++   Ensure valid image data for multi+modal ranking
+
+For academic use, cite:
+
+```bibtex
+@misc{clavié2024rerankers,
+    title={rerankers: A Lightweight Python Library to Unify Ranking Methods},
+    author={Benjamin Clavié},
+    year={2024}
+}
+```
+
+
