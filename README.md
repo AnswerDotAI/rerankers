@@ -15,10 +15,10 @@ Welcome to `rerankers`! Our goal is to provide users with a simple API to use an
 ## Recent Updates
 _A longer release history can be found in the [Release History](#release-history) section of this README._
 
-- 🆕 v0.6.1: Added support for Pinecone's new rerankers via their API.
-- 🆕 v0.6.0: `rerankers` goes multi-modal, with the support of the first MonoVLMRanker model, [MonoQwen2-VL-v0.1!](https://huggingface.co/lightonai/MonoQwen2-VL-v0.1)! + Many QoL fixes.
-- v0.5.2: Minor ColBERT fixes
-- v0.5.1: Minor change making RankedResults subscribable, meaning results[0] will return the result for the first document, etc... ⚠️ This is sorted by **passed document order**, not by results, you should use `.top_k()` to get sorted results!
+- v0.7.0: Removing `pydantic` and `tqdm` dependencies, so `rerankers` is now dependency-free by default, avoiding any issues with Pydantic v1/v2!
+- v0.6.1: Added support for Pinecone's new rerankers via their API.
+- v0.6.0: `rerankers` goes multi-modal, with the support of the first MonoVLMRanker model, [MonoQwen2-VL-v0.1!](https://huggingface.co/lightonai/MonoQwen2-VL-v0.1)! + Many QoL fixes.
+- v0.5.*: ColBERT fixes (0.5.1) & Minor change making RankedResults subscribable, meaning results[0] will return the result for the first document (0.5.2), etc... ⚠️ This is sorted by **passed document order**, not by results, you should use `.top_k()` to get sorted results!
 - v0.5.0: Added support for the current state-of-the-art rerankers, BAAI's series of `BGE` layerwise LLM rerankers, based on [Gemma](https://huggingface.co/BAAI/bge-reranker-v2.5-gemma2-lightweight) and MiniCPM. These are different from RankGPT, as they're not listwise: the models are repurposed as "cross-encoders", and do output logit scores.
 
 ## Why `rerankers`?
@@ -42,7 +42,7 @@ All the different reranking approaches tend to be done in their own library, wit
 
 ## Get Started
 
-Installation is very simple. The core package ships with just two dependencies, `tqdm` and `pydantic`, so as to avoid any conflict with your current environment.
+Installation is very simple. The core package ships with no dependencies, so as to avoid any conflict with your current environment.
 You may then install only the dependencies required by the models you want to try out:
 
 ```sh
@@ -177,7 +177,7 @@ You can also use `rank_async`, which is essentially just a wrapper to turn `rank
 RankedResults(results=[Result(document=Document(text='I really like you', doc_id=1, metadata={'source': 'twitter'}), score=-2.453125, rank=1), Result(document=Document(text='I hate you', doc_id=0, metadata={'source': 'reddit'}), score=-4.14453125, rank=2)], query='I love you', has_scores=True)
 ```
 
-All rerankers will return a `RankedResults` object, which is a pydantic object containing a list of `Result` objects and some other useful information, such as the original query. You can retrieve the top `k` results from it by running `top_k()`:
+All rerankers will return a `RankedResults` object, which is a Python object containing a list of `Result` objects and some other useful information, such as the original query. You can retrieve the top `k` results from it by running `top_k()`:
 
 ```python
 > results.top_k(1)

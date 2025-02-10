@@ -9,12 +9,7 @@ class RerankerLangChainCompressor(BaseDocumentCompressor):
     model: Any
     kwargs: dict = {}
     k: int = 5
-
-    class Config:
-        """Configuration for this pydantic object."""
-
-        arbitrary_types_allowed = True
-
+    
     def compress_documents(
         self,
         documents: Sequence[Document],

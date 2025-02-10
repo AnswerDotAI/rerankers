@@ -14,7 +14,7 @@ packages = [
 name = "rerankers" 
 
 
-version = "0.6.1"
+version = "0.7.0"
 
 description = "A unified API for various document re-ranking models."
 
@@ -46,10 +46,7 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
 ]
 
-dependencies = [
-  "pydantic",
-  "tqdm",
-]
+dependencies = []
 
 [project.optional-dependencies]
 all = [

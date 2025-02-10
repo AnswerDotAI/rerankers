@@ -29,5 +29,5 @@ def test_result_attributes():
 
 def test_result_validation_error():
     with pytest.raises(ValueError) as excinfo:
-        Result(doc_id=2, text="Doc 2")
+        Result(document=Document(doc_id=2, text="Doc 2"))
     assert "Either score or rank must be provided." in str(excinfo.value)

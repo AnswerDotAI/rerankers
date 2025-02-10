@@ -8,7 +8,6 @@ from typing import List, Optional, Union
 from math import ceil
 
 import torch
-from tqdm.auto import tqdm
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from rerankers.models.ranker import BaseRanker
 from rerankers.documents import Document
@@ -22,6 +21,11 @@ from rerankers.utils import (
     prep_docs,
     get_chunks,
 )
+try:
+    from tqdm.auto import tqdm
+except ImportError:
+    def tqdm(iterable, *args, **kwargs):
+        return iterable
 
 PREDICTION_TOKENS = {
     "default": ["▁false", "▁true"],
