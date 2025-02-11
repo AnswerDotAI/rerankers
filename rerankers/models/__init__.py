@@ -58,3 +58,9 @@ try:
     AVAILABLE_RANKERS["MonoVLMRanker"] = MonoVLMRanker
 except ImportError:
     pass
+
+try:
+    from rerankers.models.llm_relevance_filter import LLMRelevanceFilter
+    AVAILABLE_RANKERS["LLMRelevanceFilter"] = LLMRelevanceFilter
+except ImportError:
+    pass

@@ -8,7 +8,7 @@ class Result:
         self.document = document
         self.score = score
         self.rank = rank
-        
+
         if rank is None and score is None:
             raise ValueError("Either score or rank must be provided.")
 
@@ -24,6 +24,15 @@ class Result:
         raise AttributeError(
             f"'{self.__class__.__name__}' object has no attribute '{item}'"
         )
+
+    def __repr__(self) -> str:
+        fields = {
+            "document": self.document,
+            "score": self.score,
+            "rank": self.rank,
+        }
+        field_str = ", ".join(f"{k}={v!r}" for k, v in fields.items())
+        return f"{self.__class__.__name__}({field_str})"
 
 
 class RankedResults:
@@ -67,3 +76,12 @@ class RankedResults:
         """Fetches a result by its doc_id using a more efficient approach."""
         result = next((r for r in self.results if r.document.doc_id == doc_id), None)
         return result if result else None
+
+    def __repr__(self) -> str:
+        fields = {
+            "results": self.results,
+            "query": self.query,
+            "has_scores": self.has_scores,
+        }
+        field_str = ", ".join(f"{k}={v!r}" for k, v in fields.items())
+        return f"{self.__class__.__name__}({field_str})"
