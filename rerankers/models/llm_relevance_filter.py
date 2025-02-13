@@ -38,10 +38,6 @@ Text of the first document.
 <document id=1>
 Text of the second document.
 </document>
-...
-<document id=N>
-Text of the Nth document.
-</document>
 </documents>
 </input>
 And you will respond in the following format:
