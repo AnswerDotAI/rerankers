@@ -5,9 +5,9 @@ from rerankers.results import RankedResults, Result
 from rerankers.utils import prep_docs
 
 from rank_llm.data import Candidate, Query, Request
-from rank_llm.rerank.vicuna_reranker import VicunaReranker
-from rank_llm.rerank.zephyr_reranker import ZephyrReranker
-from rank_llm.rerank.rank_gpt import SafeOpenai
+from rank_llm.rerank.listwise.vicuna_reranker import VicunaReranker
+from rank_llm.rerank.listwise.zephyr_reranker import ZephyrReranker
+from rank_llm.rerank.listwise.rank_gpt import SafeOpenai
 from rank_llm.rerank.reranker import Reranker as rankllm_Reranker
 
 
