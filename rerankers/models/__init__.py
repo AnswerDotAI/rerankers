@@ -64,3 +64,10 @@ try:
     AVAILABLE_RANKERS["LLMRelevanceFilter"] = LLMRelevanceFilter
 except ImportError:
     pass
+
+try:
+    from rerankers.models.ecorank import EcoRank
+    AVAILABLE_RANKERS["EcoRank"] = EcoRank
+except ImportError:
+    pass
+

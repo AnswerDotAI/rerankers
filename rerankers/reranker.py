@@ -43,7 +43,8 @@ DEFAULTS = {
     "llm-relevance-filter": {
         "en": "gpt-4-turbo-preview",
         "other": "gpt-4-turbo-preview"
-    }
+    },
+    "ecorank": {"en": "ecorank"}
 }
 
 DEPS_MAPPING = {
@@ -57,7 +58,8 @@ DEPS_MAPPING = {
     "RankLLMRanker": "rankllm",
     "LLMLayerWiseRanker": "transformers",
     "MonoVLMRanker": "transformers",
-    "LLMRelevanceFilter": "litellm"
+    "LLMRelevanceFilter": "litellm",
+    "EcoRank": "ecorank"
 }
 
 PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "pinecone", "text-embeddings-inference"]
@@ -97,7 +99,8 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "rankllm": "RankLLMRanker",
             "llm-layerwise": "LLMLayerWiseRanker",
             "monovlm": "MonoVLMRanker",
-            "llm-relevance-filter": "LLMRelevanceFilter"
+            "llm-relevance-filter": "LLMRelevanceFilter",
+            "ecorank": "EcoRank"
         }
         return model_mapping.get(explicit_model_type, explicit_model_type)
     else:
@@ -122,7 +125,8 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "bge-reranker-v2.5-gemma2-lightweight": "LLMLayerWiseRanker",
             "monovlm": "MonoVLMRanker",
             "monoqwen2-vl": "MonoVLMRanker",
-            "llm-relevance-filter": "LLMRelevanceFilter"
+            "llm-relevance-filter": "LLMRelevanceFilter",
+            "ecorank": "EcoRank"
         }
         for key, value in model_mapping.items():
             if key in model_name:
