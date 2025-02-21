@@ -66,8 +66,7 @@ except ImportError:
     pass
 
 try:
-    from rerankers.models.ecorank import EcoRank
-    AVAILABLE_RANKERS["EcoRank"] = EcoRank
+    from rerankers.models.upr import UPRRanker
+    AVAILABLE_RANKERS["UPRRanker"] = UPRRanker
 except ImportError:
     pass
-
