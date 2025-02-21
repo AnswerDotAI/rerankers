@@ -30,6 +30,7 @@ class TransformerRanker(BaseRanker):
         self.verbose = verbose
         self.device = get_device(device, verbose=self.verbose)
         self.dtype = get_dtype(dtype, self.device, self.verbose)
+        self.is_monobert = "monobert" in model_name_or_path.lower()
         model_kwargs = kwargs.get("model_kwargs", {})
         self.model = AutoModelForSequenceClassification.from_pretrained(
             model_name_or_path,
@@ -75,11 +76,14 @@ class TransformerRanker(BaseRanker):
         for batch in batched_inputs:
             tokenized_inputs = self.tokenize(batch)
             batch_scores = self.model(**tokenized_inputs).logits.squeeze()
+            if self.dtype != torch.float32:
+                batch_scores = batch_scores.float()
             batch_scores = batch_scores.detach().cpu().numpy().tolist()
             if isinstance(batch_scores, float):  # Handling the case of single score
                 scores.append(batch_scores)
             else:
                 scores.extend(batch_scores)
+        if self.is_monobert: scores = [x[1] - x[0] for x in scores]
         if len(scores) == 1:
             return Result(document=docs[0], score=scores[0])
         else:

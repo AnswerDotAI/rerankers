@@ -15,6 +15,7 @@ class FlashRankRanker(BaseRanker):
         model_name_or_path: str,
         verbose: int = 1,
         cache_dir: str = "./.flashrank_cache",
+        **kwargs
     ):
         self.verbose = verbose
         vprint(

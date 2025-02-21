@@ -56,6 +56,8 @@ PREDICTION_TOKENS = {
     "unicamp-dl/monoptt5-base": ["▁Não", "▁Sim"],
     "unicamp-dl/monoptt5-large": ["▁Não", "▁Sim"],
     "unicamp-dl/monoptt5-3b": ["▁Não", "▁Sim"],
+    "Dundalia/TWOLAR-large": [6136, 1176],
+    "Dundalia/TWOLAR-xl": [6136, 1176],
 }
 
 
@@ -134,8 +136,14 @@ class T5Ranker(BaseRanker):
             token_false=token_false,
             token_true=token_true,
         )
-        self.token_false_id = self.tokenizer.convert_tokens_to_ids(token_false)
-        self.token_true_id = self.tokenizer.convert_tokens_to_ids(token_true)
+        if isinstance(token_false, int):
+            self.token_false_id = token_false
+        else:
+            self.token_false_id = self.tokenizer.convert_tokens_to_ids(token_false)
+        if isinstance(token_true, int):
+            self.token_true_id = token_true
+        else:
+            self.token_true_id = self.tokenizer.convert_tokens_to_ids(token_true)
         vprint(f"T5 true token set to {token_true}", self.verbose)
         vprint(f"T5 false token set to {token_false}", self.verbose)
 
