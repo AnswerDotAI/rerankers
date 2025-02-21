@@ -17,9 +17,7 @@ DEFAULTS = {
         "other": "corrius/cross-encoder-mmarco-mMiniLMv2-L12-H384-v1",
     },
     "t5": {"en": "unicamp-dl/InRanker-base", "other": "unicamp-dl/mt5-base-mmarco-v2"},
-    "lit5": {
-        "en": "castorini/LiT5-Distill-base",
-    },
+    "lit5": {"en": "castorini/LiT5-Distill-base"},
     "rankgpt": {"en": "gpt-4-turbo-preview", "other": "gpt-4-turbo-preview"},
     "rankgpt3": {"en": "gpt-3.5-turbo", "other": "gpt-3.5-turbo"},
     "rankgpt4": {"en": "gpt-4", "other": "gpt-4"},
@@ -44,7 +42,7 @@ DEFAULTS = {
         "en": "gpt-4-turbo-preview",
         "other": "gpt-4-turbo-preview"
     },
-    "ecorank": {"en": "ecorank"}
+    "upr": {"en": "google/t5-large-lm-adapt"},
 }
 
 DEPS_MAPPING = {
@@ -59,15 +57,18 @@ DEPS_MAPPING = {
     "LLMLayerWiseRanker": "transformers",
     "MonoVLMRanker": "transformers",
     "LLMRelevanceFilter": "litellm",
-    "EcoRank": "ecorank"
+    "UPRRanker": "transformers",
 }
 
 PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "pinecone", "text-embeddings-inference"]
 
-
-def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> str:
-    if model_type in PROVIDERS or any(provider in model_name for provider in PROVIDERS):
-        return model_type or next(
+def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> Optional[str]:
+    # If an explicit model_type is provided and it isn’t one of the known API providers,
+    # then we skip auto-detection of an API provider.
+    if model_type is not None and model_type not in PROVIDERS:
+        return None
+    if (model_type in PROVIDERS) or any(provider in model_name for provider in PROVIDERS):
+        return model_type if model_type in PROVIDERS else next(
             (provider for provider in PROVIDERS if provider in model_name), None
         )
     # Check if the model_name is a key in DEFAULTS to set the provider correctly
@@ -75,12 +76,10 @@ def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> str:
         (
             provider
             for provider in PROVIDERS
-            if model_name in DEFAULTS
-            and any(provider in values for values in DEFAULTS[model_name].values())
+            if model_name in DEFAULTS and any(provider in values for values in DEFAULTS[model_name].values())
         ),
         None,
     )
-
 
 def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) -> str:
     if explicit_model_type:
@@ -100,7 +99,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "llm-layerwise": "LLMLayerWiseRanker",
             "monovlm": "MonoVLMRanker",
             "llm-relevance-filter": "LLMRelevanceFilter",
-            "ecorank": "EcoRank"
+            "upr": "UPRRanker",
         }
         return model_mapping.get(explicit_model_type, explicit_model_type)
     else:
@@ -126,7 +125,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "monovlm": "MonoVLMRanker",
             "monoqwen2-vl": "MonoVLMRanker",
             "llm-relevance-filter": "LLMRelevanceFilter",
-            "ecorank": "EcoRank"
+            "upr": "UPRRanker",
         }
         for key, value in model_mapping.items():
             if key in model_name:
@@ -153,7 +152,6 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
         )
         return "TransformerRanker"
 
-
 def _get_defaults(
     model_name: str,
     model_type: Optional[str] = None,
@@ -179,7 +177,6 @@ def _get_defaults(
 
     return model_name, model_type
 
-
 def Reranker(
     model_name: str,
     lang: str = "en",
@@ -192,7 +189,9 @@ def Reranker(
     if api_provider or model_name.lower() in PROVIDERS:
         if model_name.lower() in PROVIDERS:
             api_provider = model_name.lower()
-            model_type = "APIRanker"
+            # Only override model_type to APIRanker if it hasn't been explicitly set
+            if model_type is None:
+                model_type = "APIRanker"
             model_name = (
                 DEFAULTS[api_provider][lang]
                 if lang in DEFAULTS[api_provider]
@@ -202,16 +201,15 @@ def Reranker(
                 f"Auto-updated model_name to {model_name} for API provider {api_provider}"
             )
         else:
-            model_type = "APIRanker"
+            if model_type is None:
+                model_type = "APIRanker"
     else:
         if original_model_name in DEFAULTS.keys():
-            model_name, model_type = _get_defaults(
-                original_model_name, model_type, lang, verbose
-            )
+            model_name, model_type = _get_defaults(original_model_name, model_type, lang, verbose)
             if model_name is None:
                 return None
             api_provider = _get_api_provider(model_name, model_type)
-            if api_provider:
+            if api_provider and model_type is None:
                 model_type = "APIRanker"
 
     if api_provider:
@@ -228,6 +226,6 @@ def Reranker(
         )
         print(
             f'Please install the necessary dependencies for {model_type} by running `pip install "rerankers[{DEPS_MAPPING[model_type]}]"`',
-            'or `pip install "rerankers[all]" to install the dependencies for all reranker types.',
+            'or `pip install "rerankers[all]"` to install the dependencies for all reranker types.',
         )
         return None
