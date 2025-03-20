@@ -70,3 +70,9 @@ try:
     AVAILABLE_RANKERS["UPRRanker"] = UPRRanker
 except ImportError:
     pass
+
+try:
+    from rerankers.models.mxbai_v2 import MxBaiV2Ranker
+    AVAILABLE_RANKERS["MxBaiV2Ranker"] = MxBaiV2Ranker
+except ImportError:
+    pass

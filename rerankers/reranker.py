@@ -43,6 +43,7 @@ DEFAULTS = {
         "other": "gpt-4-turbo-preview"
     },
     "upr": {"en": "google/t5-large-lm-adapt"},
+    "mxbaiv2": {"en": "mixedbread-ai/mxbai-rerank-base-v2"},
 }
 
 DEPS_MAPPING = {
@@ -58,12 +59,13 @@ DEPS_MAPPING = {
     "MonoVLMRanker": "transformers",
     "LLMRelevanceFilter": "litellm",
     "UPRRanker": "transformers",
+    "MxBaiV2Ranker": "transformers",
 }
 
 PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "pinecone", "text-embeddings-inference"]
 
 def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> Optional[str]:
-    # If an explicit model_type is provided and it isn’t one of the known API providers,
+    # If an explicit model_type is provided and it isn't one of the known API providers,
     # then we skip auto-detection of an API provider.
     if model_type is not None and model_type not in PROVIDERS:
         return None
@@ -100,6 +102,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "monovlm": "MonoVLMRanker",
             "llm-relevance-filter": "LLMRelevanceFilter",
             "upr": "UPRRanker",
+            "mxbaiv2": "MxBaiV2Ranker",
         }
         return model_mapping.get(explicit_model_type, explicit_model_type)
     else:
@@ -126,6 +129,9 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "monoqwen2-vl": "MonoVLMRanker",
             "llm-relevance-filter": "LLMRelevanceFilter",
             "upr": "UPRRanker",
+            "mxbaiv2": "MxBaiV2Ranker",
+            "mxbai-rerank-base-v2": "MxBaiV2Ranker",
+            "mxbai-rerank-large-v2": "MxBaiV2Ranker",
         }
         for key, value in model_mapping.items():
             if key in model_name:
