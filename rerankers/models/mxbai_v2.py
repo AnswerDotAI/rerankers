@@ -137,6 +137,8 @@ class MxBaiV2Ranker(BaseRanker):
         try:
             import flash_attn
             attn_impl = "flash_attention_2"
+            self.dtype = 'bfloat16'
+            vprint("Flash attention is available. Setting dtype to bfloat16.", self.verbose)
         except ImportError: 
             attn_impl = None
 
