@@ -85,7 +85,7 @@ class TransformerRanker(BaseRanker):
                 scores.extend(batch_scores)
         if self.is_monobert: scores = [x[1] - x[0] for x in scores]
         if len(scores) == 1:
-            return Result(document=docs[0], score=scores[0])
+            return RankedResults(results=[Result(document=docs[0], score=scores[0])], query=query, has_scores=True)
         else:
             ranked_results = [
                 Result(document=doc, score=score, rank=idx + 1)
