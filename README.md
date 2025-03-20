@@ -15,6 +15,7 @@ Welcome to `rerankers`! Our goal is to provide users with a simple API to use an
 ## Recent Updates
 _A longer release history can be found in the [Release History](#release-history) section of this README._
 
+- v0.9.0: Added support for MXBai V2 reranker, which is a new version of the MXBai reranker based on Qwen and the current open-source state-of-the-art.
 - v0.7.0: Removing `pydantic` and `tqdm` dependencies, so `rerankers` is now dependency-free by default, avoiding any issues with Pydantic v1/v2!
 - v0.6.1: Added support for Pinecone's new rerankers via their API.
 - v0.6.0: `rerankers` goes multi-modal, with the support of the first MonoVLMRanker model, [MonoQwen2-VL-v0.1!](https://huggingface.co/lightonai/MonoQwen2-VL-v0.1)! + Many QoL fixes.
