@@ -85,16 +85,16 @@ def _colbert_score(q_reps, p_reps, q_mask: torch.Tensor, p_mask: torch.Tensor):
 
 
 class ColBERTModel(BertPreTrainedModel):
-    def __init__(self, config):
+    def __init__(self, config, verbose: int):
         super().__init__(config)
         self.bert = BertModel(config)
-
+        self.verbose = verbose
         # TODO: Load from artifact.metadata
         if "small" in config._name_or_path:
             linear_dim = 96
         else:
             linear_dim = 128
-        vprint(f"Linear Dim set to: {linear_dim} for downcasting")
+        vprint(f"Linear Dim set to: {linear_dim} for downcasting", self.verbose)
         self.linear = nn.Linear(config.hidden_size, linear_dim, bias=False)
         self.init_weights()
 
@@ -236,7 +236,8 @@ class ColBERTRanker(BaseRanker):
         model_kwargs = kwargs.get("model_kwargs", {})
         self.model = (
             ColBERTModel.from_pretrained(
-                model_name,
+                model_name, 
+                verbose=self.verbose, 
                 **model_kwargs
             )
             .to(self.device)
