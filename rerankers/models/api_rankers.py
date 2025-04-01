@@ -13,6 +13,7 @@ import json
 URLS = {
     "cohere": "https://api.cohere.ai/v1/rerank",
     "jina": "https://api.jina.ai/v1/rerank",
+    "isaacus": "https://api.isaacus.com/v1/rerankings",
     "voyage": "https://api.voyageai.com/v1/rerank",
     "mixedbread.ai": "https://api.mixedbread.ai/v1/reranking",
     "pinecone": "https://api.pinecone.io/rerank",
@@ -30,7 +31,8 @@ API_KEY_MAPPING = {
 
 DOCUMENT_KEY_MAPPING = {
     "mixedbread.ai": "input",
-    "text-embeddings-inference":"texts"
+    "text-embeddings-inference":"texts",
+    "isaacus": "texts",
 }
 RETURN_DOCUMENTS_KEY_MAPPING = {
     "mixedbread.ai":"return_input",
@@ -45,7 +47,8 @@ RESULTS_KEY_MAPPING = {
 SCORE_KEY_MAPPING = {
     "mixedbread.ai": "score",
     "pinecone": "score",
-    "text-embeddings-inference":"score"
+    "text-embeddings-inference":"score",
+    "isaacus":"score",
 }
 
 class APIRanker(BaseRanker):

@@ -56,7 +56,7 @@ pip install "rerankers[transformers]"
 # RankGPT
 pip install "rerankers[gpt]"
 
-# API-based rerankers (Cohere, Jina, MixedBread, Pinecone)
+# API-based rerankers (Cohere, Jina, MixedBread, Pinecone, Isaacus)
 pip install "rerankers[api]"
 
 # FlashRank rerankers (ONNX-optimised, very fast on CPU)
@@ -112,6 +112,9 @@ ranker = Reranker("pinecone", api_key = API_KEY)
 
 # API (Jina)
 ranker = Reranker("jina", api_key = API_KEY)
+
+# API (Isaacus)
+ranker = Reranker("isaacus", api_key = API_KEY)
 
 # RankGPT4-turbo
 ranker = Reranker("rankgpt", api_key = API_KEY)
@@ -209,7 +212,7 @@ Models:
 - ✅ RankGPT (Available both via the original RankGPT implementation and the improved RankLLM one)
 - ✅ T5-based pointwise rankers (InRanker, MonoT5...)
 - ✅ LLM-based pointwise rankers (BAAI/bge-reranker-v2.5-gemma2-lightweight, etc...)
-- ✅ Cohere, Jina, Voyage,  MixedBread, and Pinecone API rerankers
+- ✅ Cohere, Jina, Voyage,  MixedBread, Pinecone and Isaacus API rerankers
 - ✅ [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) rerankers (ONNX-optimised models, very fast on CPU)
 - ✅ ColBERT-based reranker - not a model initially designed for reranking, but does perform quite strongly in some cases. Implementation is lightweight, based only on transformers.
 - 🟠⭐ RankLLM/RankZephyr: supported by wrapping the [rank-llm library](https://github.com/castorini/rank_llm) library! Support for RankZephyr/RankVicuna is untested, but RankLLM + GPT models fully works!
