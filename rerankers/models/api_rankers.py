@@ -91,7 +91,6 @@ class APIRanker(BaseRanker):
             ranked_docs.append(
                 Result(
                     document=docs[r["index"]],
-                    text=self._get_document_text(r),
                     score=self._get_score(r),
                     rank=i + 1,
                 )
