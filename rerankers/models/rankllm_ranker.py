@@ -48,7 +48,7 @@ class RankLLMRanker(BaseRanker):
             "stride": self.stride,
             "use_azure_openai": self.use_azure_openai,
         }
-        self.rankllm_ranker = rankllm_Reranker.create_model_coordinator(**kwargs)
+        self.model_coordinator = rankllm_Reranker.create_model_coordinator(**kwargs)
 
     def rank(
         self,
@@ -61,8 +61,7 @@ class RankLLMRanker(BaseRanker):
     ) -> RankedResults:
         docs = prep_docs(docs, doc_ids, metadata)
 
-        reranker = rankllm_Reranker(self.rankllm_ranker
-        )
+        reranker = rankllm_Reranker(self.model_coordinator)
         request = Request(
             query=Query(text=query, qid=1),
             candidates=[
