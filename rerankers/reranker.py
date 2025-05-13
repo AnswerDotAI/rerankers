@@ -22,7 +22,7 @@ DEFAULTS = {
     "rankgpt": {"en": "gpt-4-turbo-preview", "other": "gpt-4-turbo-preview"},
     "rankgpt3": {"en": "gpt-3.5-turbo", "other": "gpt-3.5-turbo"},
     "rankgpt4": {"en": "gpt-4", "other": "gpt-4"},
-    "rankllm": {"en": "gpt-4o", "other": "gpt-4o"},
+    "rankllm": {"en": "rank_zephyr", "other": "rank_zephyr"},
     "colbert": {
         "en": "colbert-ir/colbertv2.0",
         "fr": "bclavie/FraColBERTv2",
