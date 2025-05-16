@@ -14,7 +14,7 @@ from rank_llm.data import Candidate, Query, Request
 class RankLLMRanker(BaseRanker):
     def __init__(
         self,
-        model: str,
+        model: str = "rank_zephyr",
         api_key: Optional[str] = None,
         lang: str = "en",
         verbose: int = 1,
