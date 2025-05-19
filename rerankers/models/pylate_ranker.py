@@ -1,0 +1,101 @@
+"""Code from HotchPotch's JQaRa repository: https://github.com/hotchpotch/JQaRA/blob/main/evaluator/reranker/colbert_reranker.py
+Modifications include packaging into a BaseRanker, dynamic query/doc length and batch size handling."""
+
+from typing import List, Optional, Union
+
+import torch
+from transformers import AutoTokenizer
+
+from pylate import models, rank
+from rerankers.documents import Document
+from rerankers.models.ranker import BaseRanker
+from rerankers.results import RankedResults, Result
+from rerankers.utils import get_device, get_dtype, prep_docs, vprint
+
+
+class PyLateRanker(BaseRanker):
+    def __init__(
+        self,
+        model_name: str,
+        batch_size: int = 32,
+        dtype: Optional[Union[str, torch.dtype]] = None,
+        device: Optional[Union[str, torch.device]] = None,
+        verbose: int = 1,
+        query_token: str = "[unused0]",
+        document_token: str = "[unused1]",
+        **kwargs,
+    ):
+        self.verbose = verbose
+        self.device = get_device(device, self.verbose)
+        self.dtype = get_dtype(dtype, self.device, self.verbose)
+        self.batch_size = batch_size
+        vprint(
+            f"Loading model {model_name}, this might take a while...",
+            self.verbose,
+        )
+        tokenizer_kwargs = kwargs.get("tokenizer_kwargs", {})
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, **tokenizer_kwargs)
+        model_kwargs = kwargs.get("model_kwargs", {})
+        self.model = models.ColBERT(model_name_or_path=model_name, **model_kwargs)
+        self.model.eval()
+        # TODO: we can feed those to PyLate if needed
+        # self.query_max_length = 32  # Lower bound
+        # self.doc_max_length = (
+        #     self.model.config.max_position_embeddings - 2
+        # )  # Upper bound
+        # self.query_token_id: int = self.tokenizer.convert_tokens_to_ids(query_token)  # type: ignore
+        # self.document_token_id: int = self.tokenizer.convert_tokens_to_ids(
+        #     document_token
+        # )  # type: ignore
+        # self.normalize = True
+
+    def rank(
+        self,
+        query: str,
+        docs: Union[Document, str, List[Document], List[str]],
+        doc_ids: Optional[Union[List[str], List[int]]] = None,
+        metadata: Optional[List[dict]] = None,
+    ) -> RankedResults:
+        docs = prep_docs(docs, doc_ids, metadata)
+        documents_embeddings = self.model.encode(
+            [[d.text for d in docs]],
+            is_query=False,
+        )
+
+        query_embeddings = self.model.encode(
+            [query],
+            is_query=True,
+        )
+        scores = rank.rerank(
+            documents_ids=[doc_ids],
+            queries_embeddings=query_embeddings,
+            documents_embeddings=documents_embeddings,
+        )
+
+        ranked_results = [
+            Result(
+                document=doc,
+                score=score["score"] / len(query_embeddings[0]),
+                rank=idx + 1,
+            )
+            for idx, (doc, score) in enumerate(zip(docs, scores[0]))
+        ]
+        return RankedResults(results=ranked_results, query=query, has_scores=True)
+
+    def score(self, query: str, doc: str) -> float:
+        document_embeddings = self.model.encode(
+            doc,
+            is_query=False,
+        )
+
+        query_embeddings = self.model.encode(
+            query,
+            is_query=True,
+        )
+        # This is shamefull, I really need to provide a scoring method with padding inside
+        scores = rank.rerank(
+            documents_ids=["0"],
+            queries_embeddings=query_embeddings,
+            documents_embeddings=document_embeddings,
+        )
+        return scores[0][0]["score"] if scores else 0.0
