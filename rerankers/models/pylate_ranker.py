@@ -1,10 +1,6 @@
-"""Code from HotchPotch's JQaRa repository: https://github.com/hotchpotch/JQaRA/blob/main/evaluator/reranker/colbert_reranker.py
-Modifications include packaging into a BaseRanker, dynamic query/doc length and batch size handling."""
-
 from typing import List, Optional, Union
 
 import torch
-from transformers import AutoTokenizer
 
 from pylate import models, rank
 from rerankers.documents import Document
