@@ -17,8 +17,6 @@ class PyLateRanker(BaseRanker):
         dtype: Optional[Union[str, torch.dtype]] = None,
         device: Optional[Union[str, torch.device]] = None,
         verbose: int = 1,
-        query_token: str = "[unused0]",
-        document_token: str = "[unused1]",
         **kwargs,
     ):
         self.verbose = verbose
@@ -29,21 +27,15 @@ class PyLateRanker(BaseRanker):
             f"Loading model {model_name}, this might take a while...",
             self.verbose,
         )
-        tokenizer_kwargs = kwargs.get("tokenizer_kwargs", {})
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name, **tokenizer_kwargs)
+        kwargs = kwargs.get("kwargs", {})
+        kwargs["device"] = self.device
         model_kwargs = kwargs.get("model_kwargs", {})
-        self.model = models.ColBERT(model_name_or_path=model_name, **model_kwargs)
-        self.model.eval()
-        # TODO: we can feed those to PyLate if needed
-        # self.query_max_length = 32  # Lower bound
-        # self.doc_max_length = (
-        #     self.model.config.max_position_embeddings - 2
-        # )  # Upper bound
-        # self.query_token_id: int = self.tokenizer.convert_tokens_to_ids(query_token)  # type: ignore
-        # self.document_token_id: int = self.tokenizer.convert_tokens_to_ids(
-        #     document_token
-        # )  # type: ignore
-        # self.normalize = True
+        model_kwargs["torch_dtype"] = self.dtype
+        self.model = models.ColBERT(
+            model_name_or_path=model_name,
+            model_kwargs=model_kwargs,
+            **kwargs,
+        )
 
     def rank(
         self,
