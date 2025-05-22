@@ -74,6 +74,7 @@ rankllm = [
   "nmslib-metabrainz; python_version >= '3.10'",
   "rank-llm; python_version >= '3.10'"
 ]
+pylate = ["pylate"]
 dev = ["ruff", "isort", "pytest", "ipyprogress", "ipython", "ranx", "ir_datasets", "srsly"]
 
 [project.urls]

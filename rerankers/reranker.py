@@ -45,6 +45,10 @@ DEFAULTS = {
     },
     "upr": {"en": "google/t5-large-lm-adapt"},
     "mxbaiv2": {"en": "mixedbread-ai/mxbai-rerank-base-v2"},
+    "pylate": {
+        "en": "lightonai/GTE-ModernColBERT-v1",
+        "other": "lightonai/GTE-ModernColBERT-v1",
+    },
 }
 
 DEPS_MAPPING = {
@@ -61,6 +65,7 @@ DEPS_MAPPING = {
     "LLMRelevanceFilter": "litellm",
     "UPRRanker": "transformers",
     "MxBaiV2Ranker": "transformers",
+    "PyLateRanker": "pylate",
 }
 
 PROVIDERS = ["cohere", "jina", "voyage", "mixedbread.ai", "pinecone", "isaacus", "text-embeddings-inference"]
@@ -105,6 +110,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "llm-relevance-filter": "LLMRelevanceFilter",
             "upr": "UPRRanker",
             "mxbaiv2": "MxBaiV2Ranker",
+            "pylate": "PyLateRanker",
         }
         return model_mapping.get(explicit_model_type, explicit_model_type)
     else:
@@ -135,6 +141,7 @@ def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) 
             "mxbaiv2": "MxBaiV2Ranker",
             "mxbai-rerank-base-v2": "MxBaiV2Ranker",
             "mxbai-rerank-large-v2": "MxBaiV2Ranker",
+            "pylate": "PyLateRanker",
         }
         for key, value in model_mapping.items():
             if key in model_name:
