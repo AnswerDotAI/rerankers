@@ -76,3 +76,10 @@ try:
     AVAILABLE_RANKERS["MxBaiV2Ranker"] = MxBaiV2Ranker
 except ImportError:
     pass
+
+try:
+    from rerankers.models.pylate_ranker import PyLateRanker
+
+    AVAILABLE_RANKERS["PyLateRanker"] = PyLateRanker
+except ImportError:
+    pass

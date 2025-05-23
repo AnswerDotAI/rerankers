@@ -14,7 +14,7 @@ packages = [
 name = "rerankers" 
 
 
-version = "0.9.1post1"
+version = "0.10.0"
 
 description = "A unified API for various document re-ranking models."
 
@@ -74,6 +74,7 @@ rankllm = [
   "nmslib-metabrainz; python_version >= '3.10'",
   "rank-llm; python_version >= '3.10'"
 ]
+pylate = ["pylate"]
 dev = ["ruff", "isort", "pytest", "ipyprogress", "ipython", "ranx", "ir_datasets", "srsly"]
 
 [project.urls]
