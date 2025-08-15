@@ -30,8 +30,8 @@ class BaseRanker(ABC):
     async def rank_async(
         self,
         query: str,
-        docs: List[str],
-        doc_ids: Optional[Union[List[str], str]] = None,
+        docs: Union[str, List[str], Document, List[Document]],
+        doc_ids: Optional[Union[List[str], List[int]]] = None,
     ) -> RankedResults:
 
 
