@@ -16,6 +16,7 @@ class RankLLMRanker(BaseRanker):
         self,
         model: str = "rank_zephyr",
         api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
         lang: str = "en",
         verbose: int = 1,
         # RankLLM specific arguments
@@ -32,6 +33,7 @@ class RankLLMRanker(BaseRanker):
         use_azure_openai: bool = False,
     ) -> "RankLLMRanker":
         self.api_key = api_key
+        self.base_url = base_url
         self.model = model
         self.verbose = verbose
         self.lang = lang
@@ -63,6 +65,7 @@ class RankLLMRanker(BaseRanker):
             "interactive": False,
             "window_size": self.window_size,
             "stride": self.stride,
+            "base_url": self.base_url,
             "use_azure_openai": self.use_azure_openai,
         }
         model_coordinator = rankllm_Reranker.create_model_coordinator(**kwargs)
