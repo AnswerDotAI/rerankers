@@ -94,6 +94,10 @@ class RankLLMRanker(BaseRanker):
             step=10,
         )
 
+        # this is required because Zephyr Reranker returns a list of results https://github.com/castorini/rank_llm/blob/e84b530d7c81cc6c5bc42cb8ca66932ac8c1a276/src/rank_llm/rerank/listwise/zephyr_reranker.py#L107
+        if isinstance(rankllm_results, list):
+            rankllm_results = rankllm_results[0]
+
         ranked_docs = []
 
         for rank, result in enumerate(rankllm_results.candidates, start=rank_start):
