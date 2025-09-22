@@ -7,7 +7,7 @@ from rerankers.utils import prep_docs
 # from rerankers import Reranker
 
 from rank_llm.rerank.reranker import Reranker as rankllm_Reranker
-from rank_llm.rerank import PromptMode, get_azure_openai_args, get_genai_api_key, get_openai_api_key
+from rank_llm.rerank.rankllm import PromptMode
 from rank_llm.data import Candidate, Query, Request
 
 
