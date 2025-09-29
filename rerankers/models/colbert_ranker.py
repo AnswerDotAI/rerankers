@@ -80,6 +80,7 @@ def _colbert_score(q_reps, p_reps, q_mask: torch.Tensor, p_mask: torch.Tensor):
     token_scores = torch.einsum("qin,pjn->qipj", q_reps, p_reps)
     token_scores = token_scores.masked_fill(p_mask.unsqueeze(0).unsqueeze(0) == 0, -1e4)
     scores, _ = token_scores.max(-1)
+    scores = scores * q_mask.unsqueeze(-1)
     scores = scores.sum(1) / q_mask.sum(-1, keepdim=True)
     return scores
 
