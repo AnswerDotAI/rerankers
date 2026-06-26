@@ -10,6 +10,10 @@ packages = [
     "rerankers.integrations",
 ]
 
+[tool.setuptools.package-data]
+# Embed the documentation in the package
+rerankers = ["pt_docs/*.rst"]
+
 [project]
 name = "rerankers" 
 
@@ -75,6 +79,7 @@ rankllm = [
   "rank-llm; python_version >= '3.10'"
 ]
 pylate = ["pylate"]
+pyterrier = ["pyterrier >= 1.0.0"]
 dev = ["ruff", "isort", "pytest", "ipyprogress", "ipython", "ranx", "ir_datasets", "srsly"]
 
 [project.urls]

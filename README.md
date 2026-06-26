@@ -223,6 +223,7 @@ Features:
 - ✅ Reranking 
 - ✅ Consistency notebooks to ensure performance on `scifact` matches the litterature for any given model implementation (Except RankGPT, where results are harder to reproduce).
 - ✅ ONNX runtime support --> Offered through [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) -- in line with the philosophy of the lib, we won't reinvent the wheel when @PrithivirajDamodaran is doing amazing work!
+- ✅ Integrations with [LangChain](https://docs.langchain.com) and [PyTerrier](https://pyterrier.readthedocs.io/)
 - 📍 Training on Python >=3.10 (via interfacing with other libraries)
 - ❌(📍Maybe?) Training via rerankers directly
 
