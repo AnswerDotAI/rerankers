@@ -97,7 +97,13 @@ class ColBERTModel(BertPreTrainedModel):
             linear_dim = 128
         vprint(f"Linear Dim set to: {linear_dim} for downcasting", self.verbose)
         self.linear = nn.Linear(config.hidden_size, linear_dim, bias=False)
-        self.init_weights()
+        # post_init() (not the older init_weights()) is required by transformers
+        # v5+, which expects PreTrainedModel subclasses to call it at the end of
+        # __init__ to set up tied-weights bookkeeping (self._tied_weights_keys /
+        # all_tied_weights_keys). It calls init_weights() internally, so this is
+        # a safe drop-in replacement across the transformers>=4.45 range this
+        # package supports.
+        self.post_init()
 
     def forward(
         self,
