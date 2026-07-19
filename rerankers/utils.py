@@ -93,6 +93,11 @@ def prep_docs(
                     "'None' doc_ids detected, reverting to auto-generated integer ids..."
                 )
                 doc_ids = list(range(len(docs)))
+                # Write the generated ids back onto the documents (the string-input
+                # path below already does this); otherwise every returned Document
+                # keeps doc_id=None and get_score_by_docid/get_result_by_docid break.
+                for doc, doc_id in zip(docs, doc_ids):
+                    doc.doc_id = doc_id
 
         if metadata is not None:
             if docs[0].metadata is not None:
