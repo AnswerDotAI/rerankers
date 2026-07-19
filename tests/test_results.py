@@ -31,3 +31,13 @@ def test_result_validation_error():
     with pytest.raises(ValueError) as excinfo:
         Result(document=Document(doc_id=2, text="Doc 2"))
     assert "Either score or rank must be provided." in str(excinfo.value)
+
+
+def test_prep_docs_document_input_autogenerates_ids():
+    from rerankers.utils import prep_docs
+
+    # Document objects with no explicit doc_id must receive auto-generated
+    # integer ids so get_score_by_docid / get_result_by_docid can resolve them.
+    docs = [Document(text="a"), Document(text="b"), Document(text="c")]
+    out = prep_docs(docs)
+    assert [d.doc_id for d in out] == [0, 1, 2]
