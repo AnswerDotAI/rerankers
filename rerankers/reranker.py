@@ -175,7 +175,7 @@ def _get_defaults(
     verbose: int = 1,
 ) -> str:
     if model_name in DEFAULTS.keys():
-        print(f"Loading default {model_name} model for language {lang}")
+        vprint(f"Loading default {model_name} model for language {lang}", verbose)
         try:
             model_name = DEFAULTS[model_name][lang]
         except KeyError:
@@ -213,8 +213,9 @@ def Reranker(
                 if lang in DEFAULTS[api_provider]
                 else DEFAULTS[api_provider]["other"]
             )
-            print(
-                f"Auto-updated model_name to {model_name} for API provider {api_provider}"
+            vprint(
+                f"Auto-updated model_name to {model_name} for API provider {api_provider}",
+                verbose,
             )
         else:
             if model_type is None:
