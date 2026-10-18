@@ -13,6 +13,10 @@ class Result:
             raise ValueError("Either score or rank must be provided.")
 
     def __getattr__(self, item):
+        if item == "document":
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute '{item}'"
+            )
         if hasattr(self.document, item):
             return getattr(self.document, item)
         elif item in ["document", "score", "rank"]:

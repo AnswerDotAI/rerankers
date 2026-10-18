@@ -1,3 +1,6 @@
+import copy
+import pickle
+
 import pytest
 from rerankers.results import Result, RankedResults
 from rerankers.documents import Document
@@ -31,3 +34,17 @@ def test_result_validation_error():
     with pytest.raises(ValueError) as excinfo:
         Result(document=Document(doc_id=2, text="Doc 2"))
     assert "Either score or rank must be provided." in str(excinfo.value)
+
+
+def test_result_can_be_copied_and_pickled():
+    result = Result(document=Document(doc_id=1, text="Doc 1"), score=0.95, rank=1)
+
+    for restored in (
+        copy.copy(result),
+        copy.deepcopy(result),
+        pickle.loads(pickle.dumps(result)),
+    ):
+        assert restored.doc_id == 1
+        assert restored.text == "Doc 1"
+        assert restored.score == 0.95
+        assert restored.rank == 1
