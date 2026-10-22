@@ -75,15 +75,18 @@ class TransformerRanker(BaseRanker):
         scores = []
         for batch in batched_inputs:
             tokenized_inputs = self.tokenize(batch)
-            batch_scores = self.model(**tokenized_inputs).logits.squeeze()
+            batch_scores = self.model(**tokenized_inputs).logits
             if self.dtype != torch.float32:
                 batch_scores = batch_scores.float()
+            if not self.is_monobert:
+                batch_scores = batch_scores.squeeze()
             batch_scores = batch_scores.detach().cpu().numpy().tolist()
-            if isinstance(batch_scores, float):  # Handling the case of single score
+            if self.is_monobert:
+                scores.extend(values[1] - values[0] for values in batch_scores)
+            elif isinstance(batch_scores, float):  # Handling the case of single score
                 scores.append(batch_scores)
             else:
                 scores.extend(batch_scores)
-        if self.is_monobert: scores = [x[1] - x[0] for x in scores]
         if len(scores) == 1:
             return RankedResults(results=[Result(document=docs[0], score=scores[0])], query=query, has_scores=True)
         else:
@@ -97,7 +100,5 @@ class TransformerRanker(BaseRanker):
 
     @torch.inference_mode()
     def score(self, query: str, doc: str) -> float:
-        inputs = self.tokenize((query, doc))
-        outputs = self.model(**inputs)
-        score = outputs.logits.squeeze().detach().cpu().numpy().astype(float)
-        return score
+        """Score one query-document pair with the same definition used by rank()."""
+        return self.rank(query, [doc]).results[0].score
