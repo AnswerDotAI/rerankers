@@ -55,35 +55,21 @@ class PyLateRanker(BaseRanker):
             is_query=True,
         )
         scores = rank.rerank(
-            documents_ids=[doc_ids],
+            # Use positions so missing or duplicate external IDs stay unambiguous.
+            documents_ids=[list(range(len(docs)))],
             queries_embeddings=query_embeddings,
             documents_embeddings=documents_embeddings,
         )
 
         ranked_results = [
             Result(
-                document=doc,
+                document=docs[score["id"]],
                 score=score["score"] / len(query_embeddings[0]),
                 rank=idx + 1,
             )
-            for idx, (doc, score) in enumerate(zip(docs, scores[0]))
+            for idx, score in enumerate(scores[0])
         ]
         return RankedResults(results=ranked_results, query=query, has_scores=True)
 
     def score(self, query: str, doc: str) -> float:
-        document_embeddings = self.model.encode(
-            doc,
-            is_query=False,
-        )
-
-        query_embeddings = self.model.encode(
-            query,
-            is_query=True,
-        )
-        # This is shamefull, I really need to provide a scoring method with padding inside
-        scores = rank.rerank(
-            documents_ids=["0"],
-            queries_embeddings=query_embeddings,
-            documents_embeddings=document_embeddings,
-        )
-        return scores[0][0]["score"] if scores else 0.0
+        return self.rank(query, [doc]).results[0].score
