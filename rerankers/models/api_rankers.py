@@ -136,7 +136,8 @@ class APIRanker(BaseRanker):
         return json.dumps(payload)
 
     def score(self, query: str, doc: str) -> float:
-        payload = self._format_payload(query, [doc])
+        docs = prep_docs(doc)
+        payload = self._format_payload(query, docs)
         response = requests.post(self.url, headers=self.headers, data=payload)
-        results = self._parse_response(response.json(), [doc])
+        results = self._parse_response(response.json(), docs)
         return results[0].score
