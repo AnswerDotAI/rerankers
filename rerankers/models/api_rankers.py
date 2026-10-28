@@ -111,6 +111,7 @@ class APIRanker(BaseRanker):
         docs = prep_docs(docs, doc_ids, metadata)
         payload = self._format_payload(query, docs)
         response = requests.post(self.url, headers=self.headers, data=payload)
+        response.raise_for_status()
         results = self._parse_response(response.json(), docs)
         return RankedResults(results=results, query=query, has_scores=True)
 
