@@ -283,20 +283,30 @@ class ColBERTRanker(BaseRanker):
         query: str,
         docs: List[str],
     ) -> List[float]:
+        if not docs:
+            return []
+
         query_encoding = self._query_encode([query])
-        documents_encoding = self._document_encode(docs)
         query_embeddings = self._to_embs(query_encoding)
-        document_embeddings = self._to_embs(documents_encoding)
-        scores = (
-            _colbert_score(
-                query_embeddings,
-                document_embeddings,
-                query_encoding["attention_mask"],
-                documents_encoding["attention_mask"],
+        scores = []
+        # Bound document encodings, embeddings and MaxSim intermediates to one
+        # batch, rather than just batching the model's forward passes.
+        for start in range(0, len(docs), self.batch_size):
+            documents_encoding = self._document_encode(
+                docs[start : start + self.batch_size]
             )
-            .cpu()
-            .tolist()[0]
-        )
+            document_embeddings = self._to_embs(documents_encoding)
+            scores.extend(
+                _colbert_score(
+                    query_embeddings,
+                    document_embeddings,
+                    query_encoding["attention_mask"],
+                    documents_encoding["attention_mask"],
+                )
+                .cpu()
+                .tolist()[0]
+            )
+            del documents_encoding, document_embeddings
         return scores
 
     def _query_encode(self, query: list[str]):
@@ -313,7 +323,10 @@ class ColBERTRanker(BaseRanker):
             )
             for doc in documents
         ]
-        max_length = max(tokenized_doc_lengths)
+        # Include the document marker before rounding. Otherwise a document
+        # exactly on a boundary loses a token when encoded without a longer
+        # document in its batch.
+        max_length = max(tokenized_doc_lengths) + 1
         max_length = (
             ceil(max_length / 32) * 32
         )  # Round up to the nearest multiple of 32
