@@ -133,6 +133,7 @@ class RankGPTRanker(BaseRanker):
         rank_end: int = 0,
     ) -> RankedResults:
         docs = prep_docs(docs, doc_ids, metadata)
+        rank_end = len(docs) if rank_end == 0 else rank_end
 
         item = make_item(query, [d.text for d in docs])
         messages = create_permutation_instruction(
