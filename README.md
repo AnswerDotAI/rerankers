@@ -61,6 +61,9 @@ pip install "rerankers[api]"
 # FlashRank rerankers (ONNX-optimised, very fast on CPU)
 pip install "rerankers[flashrank]"
 
+# FastEmbed rerankers (ONNX Runtime; Python 3.10+)
+pip install "rerankers[fastembed]"
+
 # RankLLM rerankers (better RankGPT + support for local models such as RankZephyr and RankVicuna)
 # Note: RankLLM is only supported on Python 3.10+! This will not work with Python 3.9
 pip install "rerankers[rankllm]"
@@ -93,6 +96,12 @@ ranker = Reranker('flashrank')
 
 # Specific flashrank model.
 ranker = Reranker('ce-esci-MiniLM-L12-v2', model_type='flashrank')
+
+# FastEmbed, using a model supported by fastembed.rerank.cross_encoder.TextCrossEncoder.
+# The model is downloaded on first use and then runs locally.
+ranker = Reranker('Xenova/ms-marco-MiniLM-L-6-v2', model_type='fastembed', threads=2)
+results = ranker.rank(query='What is reranking?', docs=['Reranking orders retrieved documents.', 'An unrelated passage.'])
+# Scores are the model's raw relevance scores, not calibrated probabilities.
 
 # Default T5 Seq2Seq reranker
 ranker = Reranker("t5")

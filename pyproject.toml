@@ -50,6 +50,7 @@ dependencies = []
 
 [project.optional-dependencies]
 all = [
+    "fastembed>=0.9.1; python_version >= '3.10'",
     "transformers>=4.45.0",
     "torch",
     "litellm",
@@ -68,6 +69,7 @@ transformers = ["transformers>=4.45.0", "torch", "sentencepiece", "protobuf"]
 api = ["requests"]
 gpt = ["litellm"]
 flashrank = ["flashrank"]
+fastembed = ["fastembed>=0.9.1"]
 llmlayerwise = ["transformers>=4.45.0", "torch", "sentencepiece", "protobuf", "flash-attn"]
 monovlm = ["transformers>=4.45.0", "torch", "sentencepiece", "protobuf", "flash-attn", "pillow", "accelerate>=0.26.0", "peft>=0.13.0"]
 rankllm = [
