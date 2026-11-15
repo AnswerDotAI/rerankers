@@ -52,6 +52,7 @@ DEFAULTS = {
 }
 
 DEPS_MAPPING = {
+    "FastEmbedRanker": "fastembed",
     "TransformerRanker": "transformers",
     "T5Ranker": "transformers",
     "LiT5Ranker": "lit5",
@@ -92,6 +93,7 @@ def _get_api_provider(model_name: str, model_type: Optional[str] = None) -> Opti
 def _get_model_type(model_name: str, explicit_model_type: Optional[str] = None) -> str:
     if explicit_model_type:
         model_mapping = {
+            "fastembed": "FastEmbedRanker",
             "cohere": "APIRanker",
             "pinecone": "APIRanker",
             "jina": "APIRanker",

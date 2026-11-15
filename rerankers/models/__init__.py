@@ -1,6 +1,13 @@
 AVAILABLE_RANKERS = {}
 
 try:
+    from rerankers.models.fastembed_ranker import FastEmbedRanker
+
+    AVAILABLE_RANKERS["FastEmbedRanker"] = FastEmbedRanker
+except ImportError:
+    pass
+
+try:
     from rerankers.models.transformer_ranker import TransformerRanker
 
     AVAILABLE_RANKERS["TransformerRanker"] = TransformerRanker
