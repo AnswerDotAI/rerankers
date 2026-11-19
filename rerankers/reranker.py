@@ -13,6 +13,7 @@ DEFAULTS = {
     "mixedbread.ai": {"en": "mixedbread-ai/mxbai-rerank-large-v1"},
     "cross-encoder": {
         "en": "mixedbread-ai/mxbai-rerank-base-v1",
+        "de": "syntriq/lupe-german-reranker-small",
         "fr": "antoinelouis/crossencoder-camembert-base-mmarcoFR",
         "zh": "BAAI/bge-reranker-base",
         "other": "corrius/cross-encoder-mmarco-mMiniLMv2-L12-H384-v1",
